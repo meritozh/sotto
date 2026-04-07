@@ -12,7 +12,7 @@ struct ContentView: View {
         } detail: {
             switch selectedDestination {
             case .dashboard:
-                Text("Dashboard — coming soon")
+                DashboardView()
             case .subscriptions:
                 SubscriptionListView(selectedSubscription: $selectedSubscription)
             case .calendar:
