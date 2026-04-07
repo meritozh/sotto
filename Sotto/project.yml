@@ -22,11 +22,15 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sotto.app
+        GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.finance"
         CODE_SIGN_ENTITLEMENTS: Sotto.entitlements
         PRODUCT_NAME: Sotto
     entitlements:
       path: Sotto.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
   SottoTests:
     type: bundle.unit-test
     platform: macOS
