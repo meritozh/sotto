@@ -20,7 +20,7 @@ struct ContentView: View {
             case .categories:
                 CategoriesView()
             case .settings:
-                Text("Settings — coming soon")
+                SettingsView()
             case nil:
                 Text("Select a section")
                     .foregroundStyle(.secondary)
