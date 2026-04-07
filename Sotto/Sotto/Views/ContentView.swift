@@ -14,7 +14,7 @@ struct ContentView: View {
             case .dashboard:
                 Text("Dashboard — coming soon")
             case .subscriptions:
-                Text("Subscriptions — coming soon")
+                SubscriptionListView(selectedSubscription: $selectedSubscription)
             case .calendar:
                 Text("Calendar — coming soon")
             case .categories:
