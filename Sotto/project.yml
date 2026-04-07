@@ -1,0 +1,39 @@
+name: Sotto
+options:
+  bundleIdPrefix: com.sotto
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "26.4"
+  groupSortPosition: top
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+targets:
+  Sotto:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sotto
+        excludes:
+          - "**/.DS_Store"
+    resources:
+      - path: Resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sotto.app
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.finance"
+        CODE_SIGN_ENTITLEMENTS: Sotto.entitlements
+        PRODUCT_NAME: Sotto
+    entitlements:
+      path: Sotto.entitlements
+  SottoTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: SottoTests
+    dependencies:
+      - target: Sotto
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sotto.app.tests
