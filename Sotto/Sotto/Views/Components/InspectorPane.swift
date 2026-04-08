@@ -5,6 +5,7 @@ struct InspectorPane: View {
     @Bindable var subscription: Subscription
     @Environment(\.modelContext) private var modelContext
     @State private var showEditSheet = false
+    var onClose: (() -> Void)?
 
     private var daysUntilDue: Int {
         Calendar.current.dateComponents(
@@ -17,6 +18,20 @@ struct InspectorPane: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                if let onClose {
+                    HStack {
+                        Spacer()
+                        Button {
+                            onClose()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
                 // Header
                 HStack {
                     Image(systemName: subscription.icon)
