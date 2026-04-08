@@ -3,16 +3,18 @@ options:
   bundleIdPrefix: com.sotto
   deploymentTarget:
     macOS: "14.0"
+    iOS: "17.0"
   xcodeVersion: "26.4"
   groupSortPosition: top
 settings:
   base:
     SWIFT_VERSION: "6.0"
     MACOSX_DEPLOYMENT_TARGET: "14.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
 targets:
   Sotto:
     type: application
-    platform: macOS
+    platform: [macOS, iOS]
     sources:
       - path: Sotto
         excludes:
@@ -24,6 +26,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.sotto.app
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.finance"
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
         CODE_SIGN_ENTITLEMENTS: Sotto.entitlements
         PRODUCT_NAME: Sotto
     entitlements:
@@ -37,7 +41,7 @@ targets:
     sources:
       - path: SottoTests
     dependencies:
-      - target: Sotto
+      - target: Sotto_macOS
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.sotto.app.tests
