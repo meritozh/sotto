@@ -21,21 +21,23 @@ struct SubscriptionListView: View {
 
     var body: some View {
         List(filteredSubscriptions, selection: $selectedSubscription) { subscription in
+            #if os(iOS)
+            Button {
+                selectedSubscription = subscription
+            } label: {
+                SubscriptionRow(subscription: subscription)
+            }
+            .buttonStyle(.plain)
+            .contextMenu {
+                subscriptionContextMenuItems(for: subscription)
+            }
+            #else
             SubscriptionRow(subscription: subscription)
                 .tag(subscription)
                 .contextMenu {
-                    if subscription.status == .active {
-                        Button("Pause") { subscription.status = .paused; subscription.updatedAt = Date() }
-                    }
-                    if subscription.status == .paused {
-                        Button("Resume") { subscription.status = .active; subscription.updatedAt = Date() }
-                    }
-                    if subscription.status != .cancelled {
-                        Button("Cancel Subscription") { subscription.status = .cancelled; subscription.updatedAt = Date() }
-                    }
-                    Divider()
-                    Button("Delete", role: .destructive) { deleteSubscription(subscription) }
+                    subscriptionContextMenuItems(for: subscription)
                 }
+            #endif
         }
         .searchable(text: $searchText, prompt: "Search subscriptions")
         .toolbar {
@@ -70,6 +72,21 @@ struct SubscriptionListView: View {
     }
 
     @Environment(\.modelContext) private var modelContext
+
+    @ViewBuilder
+    private func subscriptionContextMenuItems(for subscription: Subscription) -> some View {
+        if subscription.status == .active {
+            Button("Pause") { subscription.status = .paused; subscription.updatedAt = Date() }
+        }
+        if subscription.status == .paused {
+            Button("Resume") { subscription.status = .active; subscription.updatedAt = Date() }
+        }
+        if subscription.status != .cancelled {
+            Button("Cancel Subscription") { subscription.status = .cancelled; subscription.updatedAt = Date() }
+        }
+        Divider()
+        Button("Delete", role: .destructive) { deleteSubscription(subscription) }
+    }
 
     private func deleteSubscription(_ subscription: Subscription) {
         if selectedSubscription?.id == subscription.id {
