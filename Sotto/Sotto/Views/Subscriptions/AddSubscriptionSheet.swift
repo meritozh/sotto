@@ -58,13 +58,19 @@ struct AddSubscriptionSheet: View {
                         }
 
                         TextField("Subscription Name", text: $name)
+                            #if os(macOS)
                             .textFieldStyle(.roundedBorder)
+                            #endif
                     }
 
                     HStack {
                         TextField("Amount", text: $amount)
+                            #if os(macOS)
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 120)
+                            #else
+                            .keyboardType(.decimalPad)
+                            #endif
                         CurrencyPicker(selectedCurrency: $currencyCode)
                     }
 
@@ -101,7 +107,9 @@ struct AddSubscriptionSheet: View {
             }
             .formStyle(.grouped)
         }
+        #if os(macOS)
         .frame(width: 480, height: 520)
+        #endif
         .onAppear { populateForEdit() }
     }
 
@@ -120,7 +128,6 @@ struct AddSubscriptionSheet: View {
 
     private func save() {
         guard let decimalAmount = Decimal(string: amount) else { return }
-        let nextDue = BillingCycleCalculator.nextDueDate(from: startDate, cycle: billingCycle)
 
         if let existing = existingSubscription {
             existing.name = name
@@ -129,7 +136,7 @@ struct AddSubscriptionSheet: View {
             existing.currencyCode = currencyCode
             existing.billingCycle = billingCycle
             existing.startDate = startDate
-            existing.nextDueDate = nextDue
+            existing.nextDueDate = nextDueDate(for: startDate, cycle: billingCycle)
             existing.category = selectedCategory
             existing.paymentMethod = selectedPaymentMethod
             existing.notes = notes.isEmpty ? nil : notes
@@ -142,7 +149,7 @@ struct AddSubscriptionSheet: View {
                 currencyCode: currencyCode,
                 billingCycle: billingCycle,
                 startDate: startDate,
-                nextDueDate: nextDue,
+                nextDueDate: nextDueDate(for: startDate, cycle: billingCycle),
                 category: selectedCategory,
                 paymentMethod: selectedPaymentMethod,
                 notes: notes.isEmpty ? nil : notes
@@ -151,5 +158,16 @@ struct AddSubscriptionSheet: View {
         }
 
         dismiss()
+    }
+
+    /// For new subscriptions, the start date is the first due date.
+    /// If the start date is in the past, advance until we find the next future due date.
+    private func nextDueDate(for start: Date, cycle: BillingCycle) -> Date {
+        var due = start
+        let today = Calendar.current.startOfDay(for: Date())
+        while due < today {
+            due = BillingCycleCalculator.nextDueDate(from: due, cycle: cycle)
+        }
+        return due
     }
 }

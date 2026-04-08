@@ -3,38 +3,50 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedDestination: SidebarDestination? = .dashboard
     @State private var selectedSubscription: Subscription?
-    @State private var showInspector = false
 
     var body: some View {
         NavigationSplitView {
             SidebarView(selection: $selectedDestination)
-                .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 280)
+                .navigationSplitViewColumnWidth(min: 180, ideal: 200)
         } detail: {
-            switch selectedDestination {
-            case .dashboard:
-                DashboardView()
-            case .subscriptions:
-                SubscriptionListView(selectedSubscription: $selectedSubscription)
-            case .calendar:
-                CalendarView(selectedSubscription: $selectedSubscription)
-            case .categories:
-                CategoriesView()
-            case .settings:
-                SettingsView()
-            case nil:
-                Text("Select a section")
-                    .foregroundStyle(.secondary)
+            #if os(macOS)
+            HSplitView {
+                detailContent
+                    .frame(minWidth: 400)
+
+                if let subscription = selectedSubscription {
+                    InspectorPane(subscription: subscription)
+                        .frame(minWidth: 250, idealWidth: 300, maxWidth: 350)
+                }
             }
+            #else
+            detailContent
+            #endif
         }
-        .frame(minWidth: 700, minHeight: 500)
-        .inspector(isPresented: $showInspector) {
-            if let subscription = selectedSubscription {
-                InspectorPane(subscription: subscription)
-                    .inspectorColumnWidth(min: 250, ideal: 300, max: 350)
-            }
+        #if os(macOS)
+        .frame(minWidth: 800, minHeight: 500)
+        #endif
+        .onChange(of: selectedDestination) { _, _ in
+            selectedSubscription = nil
         }
-        .onChange(of: selectedSubscription) { _, newValue in
-            showInspector = newValue != nil
+    }
+
+    @ViewBuilder
+    private var detailContent: some View {
+        switch selectedDestination {
+        case .dashboard:
+            DashboardView()
+        case .subscriptions:
+            SubscriptionListView(selectedSubscription: $selectedSubscription)
+        case .calendar:
+            CalendarView(selectedSubscription: $selectedSubscription)
+        case .categories:
+            CategoriesView()
+        case .settings:
+            SettingsView()
+        case nil:
+            Text("Select a section")
+                .foregroundStyle(.secondary)
         }
     }
 }

@@ -5,17 +5,23 @@ struct DashboardView: View {
     @Query private var allSubscriptions: [Subscription]
     @Query(sort: \PaymentHistory.paidDate, order: .reverse)
     private var recentPayments: [PaymentHistory]
+    @Query private var exchangeRates: [ExchangeRate]
+    @AppStorage("baseCurrency") private var baseCurrency = "USD"
 
     private var activeSubscriptions: [Subscription] {
         allSubscriptions.filter { $0.status == .active }
+    }
+
+    private var currentExchangeRate: ExchangeRate? {
+        exchangeRates.first { $0.baseCurrency == baseCurrency }
     }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
                 HStack(alignment: .top, spacing: 16) {
-                    SpendingCard(activeSubscriptions: activeSubscriptions)
-                    CategoryChart(activeSubscriptions: activeSubscriptions)
+                    SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
+                    CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
                 }
 
                 HStack(alignment: .top, spacing: 16) {
@@ -26,7 +32,11 @@ struct DashboardView: View {
             .padding()
         }
         .navigationTitle("Dashboard")
+        #if os(macOS)
         .background(Color(nsColor: .windowBackgroundColor))
+        #else
+        .background(Color(.systemGroupedBackground))
+        #endif
     }
 
     private var recentActivityCard: some View {
