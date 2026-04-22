@@ -2,12 +2,17 @@ import SwiftUI
 import SwiftData
 
 struct CalendarView: View {
+
+    // MARK: - Properties
+
     @Query private var allSubscriptions: [Subscription]
     @Binding var selectedSubscription: Subscription?
     @State private var displayedMonth = Date()
 
+    // MARK: - Computed Properties
+
     private var activeSubscriptions: [Subscription] {
-        allSubscriptions.filter { $0.status == .active }
+        allSubscriptions.activeOnly
     }
 
     private let calendar = Calendar.current
@@ -18,7 +23,9 @@ struct CalendarView: View {
     }
 
     private var daysInMonth: [Date] {
-        let range = calendar.range(of: .day, in: .month, for: displayedMonth)!
+        guard let range = calendar.range(of: .day, in: .month, for: displayedMonth) else {
+            return []
+        }
         let components = calendar.dateComponents([.year, .month], from: displayedMonth)
         return range.compactMap { day in
             calendar.date(from: DateComponents(year: components.year, month: components.month, day: day))
@@ -35,12 +42,16 @@ struct CalendarView: View {
         return activeSubscriptions.filter { calendar.startOfDay(for: $0.nextDueDate) == startOfDay }
     }
 
+    // MARK: - Body
+
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 0) {
             // Month navigation
             HStack {
                 Button {
-                    displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth)!
+                    if let newMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) {
+                        displayedMonth = newMonth
+                    }
                 } label: {
                     Image(systemName: "chevron.left")
                 }
@@ -52,7 +63,9 @@ struct CalendarView: View {
                     .frame(minWidth: 200)
 
                 Button {
-                    displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth)!
+                    if let newMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) {
+                        displayedMonth = newMonth
+                    }
                 } label: {
                     Image(systemName: "chevron.right")
                 }
@@ -63,10 +76,10 @@ struct CalendarView: View {
                 }
                 .buttonStyle(.bordered)
             }
-            .padding(.horizontal)
+            .padding()
 
             // Weekday headers
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 0) {
+            HStack(spacing: 0) {
                 ForEach(weekdaySymbols, id: \.self) { symbol in
                     Text(symbol)
                         .font(.caption)
@@ -76,65 +89,76 @@ struct CalendarView: View {
                 }
             }
             .padding(.horizontal)
+            .padding(.bottom, 4)
 
-            // Day grid
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 4) {
-                ForEach(0..<leadingEmptyDays, id: \.self) { _ in
-                    Color.clear.frame(height: 72)
-                }
+            Divider()
 
-                ForEach(daysInMonth, id: \.self) { date in
-                    let subs = subscriptions(on: date)
-                    let isToday = calendar.isDateInToday(date)
+            // Day grid — fills remaining space
+            GeometryReader { geo in
+                let totalRows = CGFloat((leadingEmptyDays + daysInMonth.count + 6) / 7)
+                let rowHeight = max(48, geo.size.height / totalRows)
 
-                    VStack(spacing: 2) {
-                        Text("\(calendar.component(.day, from: date))")
-                            .font(.subheadline)
-                            .fontWeight(isToday ? .bold : .regular)
-                            .foregroundStyle(isToday ? .white : .primary)
-                            .frame(width: 24, height: 24)
-                            .background(isToday ? Circle().fill(Color.accentColor) : nil)
-
-                        if !subs.isEmpty {
-                            VStack(spacing: 1) {
-                                ForEach(subs.prefix(2)) { sub in
-                                    Text(sub.name)
-                                        .font(.system(size: 9))
-                                        .lineLimit(1)
-                                        .padding(.horizontal, 3)
-                                        .padding(.vertical, 1)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 3)
-                                                .fill(sub.category.map { Color(hex: $0.colorHex).opacity(0.3) } ?? Color.gray.opacity(0.15))
-                                        )
-                                }
-                                if subs.count > 2 {
-                                    Text("+\(subs.count - 2)")
-                                        .font(.system(size: 8))
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                        Spacer()
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 0) {
+                    ForEach(0..<leadingEmptyDays, id: \.self) { _ in
+                        Color.clear.frame(height: rowHeight)
                     }
-                    .frame(height: 72)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(!subs.isEmpty ? Color.accentColor.opacity(0.05) : Color.clear)
-                    )
-                    .onTapGesture {
-                        if let first = subs.first {
-                            selectedSubscription = first
-                        }
+
+                    ForEach(daysInMonth, id: \.self) { date in
+                        dayCell(date: date, height: rowHeight)
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+        .navigationTitle("Calendar")
+    }
+
+    // MARK: - Private Views
+
+    private func dayCell(date: Date, height: CGFloat) -> some View {
+        let subs = subscriptions(on: date)
+        let isToday = calendar.isDateInToday(date)
+
+        return VStack(spacing: 2) {
+            Text("\(calendar.component(.day, from: date))")
+                .font(.subheadline)
+                .fontWeight(isToday ? .bold : .regular)
+                .foregroundStyle(isToday ? .white : .primary)
+                .frame(width: 24, height: 24)
+                .background(isToday ? Circle().fill(Color.accentColor) : nil)
+
+            if !subs.isEmpty {
+                VStack(spacing: 1) {
+                    ForEach(subs.prefix(2)) { sub in
+                        Text(sub.name)
+                            .font(.system(size: 9))
+                            .lineLimit(1)
+                            .padding(.horizontal, 3)
+                            .padding(.vertical, 1)
+                            .background(
+                                RoundedRectangle(cornerRadius: 3)
+                                    .fill(sub.category.map { Color(hex: $0.colorHex).opacity(0.3) } ?? Color.gray.opacity(0.15))
+                            )
+                    }
+                    if subs.count > 2 {
+                        Text("+\(subs.count - 2)")
+                            .font(.system(size: 8))
+                            .foregroundStyle(.secondary)
                     }
                 }
             }
-            .padding(.horizontal)
-
-            Spacer()
+            Spacer(minLength: 0)
         }
-        .padding(.top)
-        .navigationTitle("Calendar")
+        .frame(height: height)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 4)
+                .fill(!subs.isEmpty ? Color.accentColor.opacity(0.05) : Color.clear)
+        )
+        .onTapGesture {
+            if let first = subs.first {
+                selectedSubscription = first
+            }
+        }
     }
 }

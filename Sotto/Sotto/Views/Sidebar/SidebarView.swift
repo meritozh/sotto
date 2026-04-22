@@ -1,68 +1,52 @@
 import SwiftUI
 import SwiftData
 
-enum SidebarDestination: String, CaseIterable, Identifiable {
-    case dashboard
-    case subscriptions
-    case calendar
-    case categories
-    case settings
-
-    var id: String { rawValue }
-
-    var label: String {
-        switch self {
-        case .dashboard: "Dashboard"
-        case .subscriptions: "All Subscriptions"
-        case .calendar: "Calendar"
-        case .categories: "Categories"
-        case .settings: "Settings"
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .dashboard: "square.grid.2x2"
-        case .subscriptions: "list.bullet"
-        case .calendar: "calendar"
-        case .categories: "tag"
-        case .settings: "gearshape"
-        }
-    }
-}
-
 struct SidebarView: View {
+
+    // MARK: - Properties
+
     @Binding var selection: SidebarDestination?
+    @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
     @Query private var allSubscriptions: [Subscription]
+    @Query private var exchangeRates: [ExchangeRate]
+
+    // MARK: - Computed Properties
 
     private var activeSubscriptions: [Subscription] {
-        allSubscriptions.filter { $0.status == .active }
+        allSubscriptions.activeOnly
     }
 
     private var urgentCount: Int {
-        let threeDaysFromNow = Calendar.current.date(byAdding: .day, value: 3, to: Date())!
-        return activeSubscriptions.filter { $0.nextDueDate <= threeDaysFromNow }.count
+        let cutoff = Calendar.current.date(byAdding: .day, value: AppConstants.urgentDaysThreshold, to: Date()) ?? Date()
+        return activeSubscriptions.filter { $0.nextDueDate <= cutoff }.count
+    }
+
+    private var currentExchangeRate: ExchangeRate? {
+        exchangeRates.first { $0.baseCurrency == baseCurrency }
     }
 
     private var monthlyTotal: Decimal {
         activeSubscriptions.reduce(Decimal.zero) { total, sub in
-            total + BillingCycleCalculator.monthlyEquivalent(amount: sub.amount, cycle: sub.billingCycle)
+            var monthly = BillingCycleCalculator.monthlyEquivalent(amount: sub.amount, cycle: sub.billingCycle)
+            if let rate = currentExchangeRate {
+                monthly = rate.convertToBase(amount: monthly, from: sub.currencyCode)
+            }
+            return total + monthly
         }
     }
 
+    // MARK: - Body
+
     var body: some View {
         List(selection: $selection) {
-            Section("Navigation") {
-                ForEach(SidebarDestination.allCases) { dest in
-                    Label(dest.label, systemImage: dest.icon)
-                        .tag(dest)
-                        .badge(dest == .subscriptions ? urgentCount : 0)
-                }
+            ForEach(SidebarDestination.allCases, id: \.self) { dest in
+                Label(dest.label, systemImage: dest.icon)
+                    .badge(dest == .subscriptions ? urgentCount : 0)
             }
 
             Section("Quick Stats") {
                 LabeledContent("Monthly Total") {
-                    Text(monthlyTotal, format: .currency(code: "USD"))
+                    Text(monthlyTotal, format: .currency(code: baseCurrency))
                         .font(.headline)
                 }
                 LabeledContent("Due Soon") {

@@ -2,6 +2,9 @@ import SwiftUI
 import SwiftData
 
 struct SubscriptionListView: View {
+
+    // MARK: - Properties
+
     @Query(sort: \Subscription.nextDueDate) private var subscriptions: [Subscription]
     @Query private var categories: [Category]
     @Binding var selectedSubscription: Subscription?
@@ -9,6 +12,10 @@ struct SubscriptionListView: View {
     @State private var statusFilter: SubscriptionStatus? = .active
     @State private var categoryFilter: Category?
     @State private var showAddSheet = false
+
+    @Environment(\.modelContext) private var modelContext
+
+    // MARK: - Computed Properties
 
     private var filteredSubscriptions: [Subscription] {
         subscriptions.filter { sub in
@@ -18,6 +25,8 @@ struct SubscriptionListView: View {
             return matchesSearch && matchesStatus && matchesCategory
         }
     }
+
+    // MARK: - Body
 
     var body: some View {
         List(filteredSubscriptions, selection: $selectedSubscription) { subscription in
@@ -71,7 +80,7 @@ struct SubscriptionListView: View {
         .navigationTitle("All Subscriptions")
     }
 
-    @Environment(\.modelContext) private var modelContext
+    // MARK: - Actions
 
     @ViewBuilder
     private func subscriptionContextMenuItems(for subscription: Subscription) -> some View {
@@ -87,6 +96,8 @@ struct SubscriptionListView: View {
         Divider()
         Button("Delete", role: .destructive) { deleteSubscription(subscription) }
     }
+
+    // MARK: - Helpers
 
     private func deleteSubscription(_ subscription: Subscription) {
         if selectedSubscription?.id == subscription.id {
