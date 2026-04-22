@@ -28,13 +28,10 @@ targets:
         INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.finance"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
-        CODE_SIGN_ENTITLEMENTS: Sotto.entitlements
         PRODUCT_NAME: Sotto
-    entitlements:
-      path: Sotto.entitlements
-      properties:
-        com.apple.security.app-sandbox: true
-        com.apple.security.network.client: true
+      platform:
+        macOS:
+          CODE_SIGN_ENTITLEMENTS: Sotto.entitlements
   SottoTests:
     type: bundle.unit-test
     platform: macOS
