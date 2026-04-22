@@ -3,6 +3,8 @@ import SwiftUI
 struct CurrencyPicker: View {
     @Binding var selectedCurrency: String
 
+    // MARK: - Properties
+
     static let currencies: [(code: String, name: String)] = [
         ("USD", "US Dollar"),
         ("EUR", "Euro"),
@@ -27,6 +29,8 @@ struct CurrencyPicker: View {
         ("THB", "Thai Baht"),
         ("TRY", "Turkish Lira")
     ]
+
+    // MARK: - Body
 
     var body: some View {
         Picker("Currency", selection: $selectedCurrency) {

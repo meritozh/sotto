@@ -4,6 +4,8 @@ struct IconPicker: View {
     @Binding var selectedIcon: String
     @Environment(\.dismiss) private var dismiss
 
+    // MARK: - Properties
+
     private let symbols = [
         "play.tv", "film", "music.note", "headphones",
         "laptopcomputer", "desktopcomputer", "keyboard", "printer",
@@ -18,6 +20,8 @@ struct IconPicker: View {
         "paintbrush", "camera", "wand.and.stars",
         "ellipsis.circle"
     ]
+
+    // MARK: - Body
 
     var body: some View {
         VStack(spacing: 12) {

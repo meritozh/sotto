@@ -9,10 +9,10 @@ struct ContentView: View {
         #if os(macOS)
         DesktopLayout()
         #else
-        if horizontalSizeClass == .compact {
-            TabRootView()
-        } else {
+        if horizontalSizeClass == .regular {
             DesktopLayout()
+        } else {
+            TabRootView()
         }
         #endif
     }
@@ -21,29 +21,37 @@ struct ContentView: View {
 /// Two-column NavigationSplitView + overlay panel.
 /// Shared by macOS and iPad.
 struct DesktopLayout: View {
+
+    // MARK: - Properties
+
     @State private var selectedDestination: SidebarDestination? = .dashboard
     @State private var selectedSubscription: Subscription?
+
+    // MARK: - Body
 
     var body: some View {
         NavigationSplitView {
             SidebarView(selection: $selectedDestination)
                 #if os(macOS)
-                .navigationSplitViewColumnWidth(min: 180, ideal: 200)
+                .navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 220)
                 #endif
         } detail: {
-            ZStack {
-                detailContent
-
-                SubscriptionDetailOverlay(selectedSubscription: $selectedSubscription)
-            }
+            detailContent
+                .overlay {
+                    if selectedSubscription != nil {
+                        SubscriptionDetailOverlay(selectedSubscription: $selectedSubscription)
+                    }
+                }
         }
         #if os(macOS)
-        .frame(minWidth: 800, minHeight: 500)
+        .frame(minWidth: 900, minHeight: 500)
         #endif
         .onChange(of: selectedDestination) { _, _ in
             selectedSubscription = nil
         }
     }
+
+    // MARK: - Private Views
 
     @ViewBuilder
     private var detailContent: some View {

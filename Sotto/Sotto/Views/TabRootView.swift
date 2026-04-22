@@ -1,8 +1,13 @@
 import SwiftUI
 
 struct TabRootView: View {
+
+    // MARK: - Properties
+
     @State private var selectedTab = 0
     @State private var selectedSubscription: Subscription?
+
+    // MARK: - Body
 
     var body: some View {
         TabView(selection: $selectedTab) {

@@ -2,6 +2,9 @@ import SwiftUI
 import SwiftData
 
 struct AddSubscriptionSheet: View {
+
+    // MARK: - Properties
+
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Query private var categories: [Category]
@@ -20,9 +23,13 @@ struct AddSubscriptionSheet: View {
     @State private var notes = ""
     @State private var showIconPicker = false
 
+    // MARK: - Computed Properties
+
     private var isValid: Bool {
         !name.isEmpty && Decimal(string: amount) != nil && selectedCategory != nil
     }
+
+    // MARK: - Body
 
     var body: some View {
         VStack(spacing: 0) {
@@ -112,6 +119,8 @@ struct AddSubscriptionSheet: View {
         #endif
         .onAppear { populateForEdit() }
     }
+
+    // MARK: - Helpers
 
     private func populateForEdit() {
         guard let sub = existingSubscription else { return }
