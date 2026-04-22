@@ -3,20 +3,32 @@ import SwiftData
 import Charts
 
 struct CategoryChart: View {
+
+    // MARK: - Properties
+
     let activeSubscriptions: [Subscription]
+    let exchangeRate: ExchangeRate?
+    @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
+
+    // MARK: - Computed Properties
 
     private var categoryBreakdown: [(name: String, colorHex: String, amount: Decimal)] {
         var map: [String: (colorHex: String, amount: Decimal)] = [:]
         for sub in activeSubscriptions {
             let catName = sub.category?.name ?? "Uncategorized"
             let catColor = sub.category?.colorHex ?? "#B0B0B0"
-            let monthly = BillingCycleCalculator.monthlyEquivalent(amount: sub.amount, cycle: sub.billingCycle)
+            var monthly = BillingCycleCalculator.monthlyEquivalent(amount: sub.amount, cycle: sub.billingCycle)
+            if let rate = exchangeRate {
+                monthly = rate.convertToBase(amount: monthly, from: sub.currencyCode)
+            }
             let existing = map[catName] ?? (colorHex: catColor, amount: 0)
             map[catName] = (colorHex: catColor, amount: existing.amount + monthly)
         }
         return map.map { (name: $0.key, colorHex: $0.value.colorHex, amount: $0.value.amount) }
             .sorted { $0.amount > $1.amount }
     }
+
+    // MARK: - Body
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -53,7 +65,7 @@ struct CategoryChart: View {
                             Text(item.name)
                                 .font(.caption)
                             Spacer()
-                            Text(item.amount, format: .currency(code: "USD"))
+                            Text(item.amount, format: .currency(code: baseCurrency))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -61,9 +73,6 @@ struct CategoryChart: View {
                 }
             }
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 12).fill(.background))
-        .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
+        .cardStyle()
     }
 }

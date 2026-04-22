@@ -2,11 +2,18 @@ import SwiftUI
 import SwiftData
 
 struct UpcomingRenewalsCard: View {
+
+    // MARK: - Properties
+
     let activeSubscriptions: [Subscription]
+
+    // MARK: - Computed Properties
 
     private var upcoming: [Subscription] {
         Array(activeSubscriptions.sorted { $0.nextDueDate < $1.nextDueDate }.prefix(5))
     }
+
+    // MARK: - Body
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -36,16 +43,15 @@ struct UpcomingRenewalsCard: View {
                 }
             }
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 12).fill(.background))
-        .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
+        .cardStyle()
     }
 
+    // MARK: - Private Views
+
     private func daysUntilBadge(for subscription: Subscription) -> some View {
-        let days = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: subscription.nextDueDate)).day ?? 0
+        let days = subscription.daysUntilDue
         let text = days <= 0 ? "Today" : "\(days)d"
-        let isUrgent = days <= 3
+        let isUrgent = days <= AppConstants.urgentDaysThreshold
         return Text(text)
             .font(.caption)
             .fontWeight(.medium)

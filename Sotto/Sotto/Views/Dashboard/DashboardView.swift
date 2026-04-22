@@ -2,31 +2,60 @@ import SwiftUI
 import SwiftData
 
 struct DashboardView: View {
+
+    // MARK: - Properties
+
     @Query private var allSubscriptions: [Subscription]
     @Query(sort: \PaymentHistory.paidDate, order: .reverse)
     private var recentPayments: [PaymentHistory]
     @Query private var exchangeRates: [ExchangeRate]
-    @AppStorage("baseCurrency") private var baseCurrency = "USD"
+    @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
+
+    // MARK: - Computed Properties
 
     private var activeSubscriptions: [Subscription] {
-        allSubscriptions.filter { $0.status == .active }
+        allSubscriptions.activeOnly
     }
 
     private var currentExchangeRate: ExchangeRate? {
         exchangeRates.first { $0.baseCurrency == baseCurrency }
     }
 
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
+
+    private var isCompact: Bool {
+        #if os(iOS)
+        return horizontalSizeClass == .compact
+        #else
+        return false
+        #endif
+    }
+
+    // MARK: - Body
+
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                HStack(alignment: .top, spacing: 16) {
+                if isCompact {
                     SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
                     CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
-                }
-
-                HStack(alignment: .top, spacing: 16) {
                     UpcomingRenewalsCard(activeSubscriptions: activeSubscriptions)
                     recentActivityCard
+                } else {
+                    HStack(alignment: .top, spacing: 16) {
+                        SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
+                            .frame(maxHeight: .infinity)
+                        CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
+                            .frame(maxHeight: .infinity)
+                    }
+                    HStack(alignment: .top, spacing: 16) {
+                        UpcomingRenewalsCard(activeSubscriptions: activeSubscriptions)
+                            .frame(maxHeight: .infinity)
+                        recentActivityCard
+                            .frame(maxHeight: .infinity)
+                    }
                 }
             }
             .padding()
@@ -38,6 +67,8 @@ struct DashboardView: View {
         .background(Color(.systemGroupedBackground))
         #endif
     }
+
+    // MARK: - Private Views
 
     private var recentActivityCard: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -68,9 +99,6 @@ struct DashboardView: View {
                 }
             }
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 12).fill(.background))
-        .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
+        .cardStyle()
     }
 }
