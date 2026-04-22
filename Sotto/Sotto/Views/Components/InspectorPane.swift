@@ -2,18 +2,15 @@ import SwiftUI
 import SwiftData
 
 struct InspectorPane: View {
+
+    // MARK: - Properties
+
     @Bindable var subscription: Subscription
     @Environment(\.modelContext) private var modelContext
     @State private var showEditSheet = false
     var onClose: (() -> Void)?
 
-    private var daysUntilDue: Int {
-        Calendar.current.dateComponents(
-            [.day],
-            from: Calendar.current.startOfDay(for: Date()),
-            to: Calendar.current.startOfDay(for: subscription.nextDueDate)
-        ).day ?? 0
-    }
+    // MARK: - Body
 
     var body: some View {
         ScrollView {
@@ -74,9 +71,9 @@ struct InspectorPane: View {
                     VStack(alignment: .trailing) {
                         Text(subscription.nextDueDate, format: .dateTime.month(.abbreviated).day().year())
                         if subscription.status == .active {
-                            Text(daysUntilDue <= 0 ? "Due today" : "in \(daysUntilDue) days")
+                            Text(subscription.daysUntilDue <= 0 ? "Due today" : "in \(subscription.daysUntilDue) days")
                                 .font(.caption)
-                                .foregroundStyle(daysUntilDue <= 3 ? .red : .secondary)
+                                .foregroundStyle(subscription.daysUntilDue <= AppConstants.urgentDaysThreshold ? .red : .secondary)
                         }
                     }
                 }
@@ -159,6 +156,8 @@ struct InspectorPane: View {
         }
     }
 
+    // MARK: - Computed Properties
+
     private var statusColor: Color {
         switch subscription.status {
         case .active: .green
@@ -166,6 +165,8 @@ struct InspectorPane: View {
         case .cancelled: .red
         }
     }
+
+    // MARK: - Actions
 
     private func markAsPaid() {
         let payment = PaymentHistory(
@@ -181,6 +182,8 @@ struct InspectorPane: View {
         )
         subscription.updatedAt = Date()
     }
+
+    // MARK: - Private Views
 
     private var paymentHistorySection: some View {
         VStack(alignment: .leading, spacing: 8) {

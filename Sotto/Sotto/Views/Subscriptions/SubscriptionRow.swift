@@ -3,9 +3,7 @@ import SwiftUI
 struct SubscriptionRow: View {
     let subscription: Subscription
 
-    private var daysUntilDue: Int {
-        Calendar.current.dateComponents([.day], from: Date(), to: subscription.nextDueDate).day ?? 0
-    }
+    // MARK: - Body
 
     var body: some View {
         HStack(spacing: 12) {
@@ -42,9 +40,9 @@ struct SubscriptionRow: View {
                     .font(.body)
                     .fontWeight(.medium)
                 if subscription.status == .active {
-                    Text(daysUntilDue <= 0 ? "Due today" : "in \(daysUntilDue) days")
+                    Text(subscription.daysUntilDue <= 0 ? "Due today" : "in \(subscription.daysUntilDue) days")
                         .font(.caption)
-                        .foregroundStyle(daysUntilDue <= 3 ? .red : .secondary)
+                        .foregroundStyle(subscription.daysUntilDue <= AppConstants.urgentDaysThreshold ? .red : .secondary)
                 } else {
                     Text(subscription.status.displayName)
                         .font(.caption)

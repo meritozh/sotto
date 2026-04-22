@@ -2,13 +2,19 @@ import SwiftUI
 import SwiftData
 
 struct CategoriesView: View {
+
+    // MARK: - Properties
+
     @Query private var categories: [Category]
+    @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
     @Environment(\.modelContext) private var modelContext
     @State private var showAddCategory = false
     @State private var editingCategory: Category?
     @State private var newName = ""
     @State private var newColorHex = "#4ECDC4"
     @State private var newIcon = "tag"
+
+    // MARK: - Body
 
     var body: some View {
         List {
@@ -34,7 +40,7 @@ struct CategoriesView: View {
                         .reduce(Decimal.zero) { $0 + BillingCycleCalculator.monthlyEquivalent(amount: $1.amount, cycle: $1.billingCycle) }
 
                     if total > 0 {
-                        Text(total, format: .currency(code: "USD"))
+                        Text(total, format: .currency(code: baseCurrency))
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                         Text("/mo")
@@ -68,13 +74,12 @@ struct CategoriesView: View {
         }
     }
 
+    // MARK: - Private Views
+
     private func categoryForm(editing: Category?) -> some View {
         let isEditing = editing != nil
 
-        return VStack(spacing: 16) {
-            Text(isEditing ? "Edit Category" : "New Category")
-                .font(.headline)
-
+        return NavigationStack {
             Form {
                 TextField("Name", text: $newName)
                 TextField("Color (hex)", text: $newColorHex)
@@ -90,36 +95,39 @@ struct CategoriesView: View {
                 }
             }
             .formStyle(.grouped)
-
-            HStack {
-                Button("Cancel") {
-                    showAddCategory = false
-                    editingCategory = nil
-                    resetForm()
-                }
-                .keyboardShortcut(.cancelAction)
-
-                Spacer()
-
-                Button(isEditing ? "Save" : "Add") {
-                    if let category = editing {
-                        category.name = newName
-                        category.colorHex = newColorHex
-                        category.icon = newIcon
-                    } else {
-                        let category = Category(name: newName, colorHex: newColorHex, icon: newIcon)
-                        modelContext.insert(category)
+            .navigationTitle(isEditing ? "Edit Category" : "New Category")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        showAddCategory = false
+                        editingCategory = nil
+                        resetForm()
                     }
-                    showAddCategory = false
-                    editingCategory = nil
-                    resetForm()
                 }
-                .keyboardShortcut(.defaultAction)
-                .disabled(newName.isEmpty)
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(isEditing ? "Save" : "Add") {
+                        if let category = editing {
+                            category.name = newName
+                            category.colorHex = newColorHex
+                            category.icon = newIcon
+                        } else {
+                            let category = Category(name: newName, colorHex: newColorHex, icon: newIcon)
+                            modelContext.insert(category)
+                        }
+                        showAddCategory = false
+                        editingCategory = nil
+                        resetForm()
+                    }
+                    .disabled(newName.isEmpty)
+                }
             }
-            .padding()
         }
+        #if os(macOS)
         .frame(width: 400, height: 320)
+        #endif
         .onAppear {
             if let category = editing {
                 newName = category.name
@@ -130,6 +138,8 @@ struct CategoriesView: View {
             }
         }
     }
+
+    // MARK: - Helpers
 
     private func resetForm() {
         newName = ""
