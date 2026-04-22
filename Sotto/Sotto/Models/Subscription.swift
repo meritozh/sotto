@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
 
+// MARK: - BillingCycle
 enum BillingCycle: String, Codable, CaseIterable {
     case weekly
     case monthly
@@ -12,6 +13,7 @@ enum BillingCycle: String, Codable, CaseIterable {
     }
 }
 
+// MARK: - SubscriptionStatus
 enum SubscriptionStatus: String, Codable, CaseIterable {
     case active
     case paused
@@ -22,8 +24,11 @@ enum SubscriptionStatus: String, Codable, CaseIterable {
     }
 }
 
+// MARK: - Subscription
 @Model
 final class Subscription {
+
+    // MARK: - Properties
     @Attribute(.unique) var id: UUID
     var name: String
     var icon: String
@@ -41,6 +46,7 @@ final class Subscription {
     @Relationship(deleteRule: .cascade, inverse: \PaymentHistory.subscription)
     var paymentHistory: [PaymentHistory]
 
+    // MARK: - Initialization
     init(
         name: String,
         icon: String,

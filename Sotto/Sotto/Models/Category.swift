@@ -3,6 +3,8 @@ import SwiftData
 
 @Model
 final class Category {
+
+    // MARK: - Properties
     @Attribute(.unique) var id: UUID
     var name: String
     var colorHex: String
@@ -10,6 +12,7 @@ final class Category {
     @Relationship(deleteRule: .nullify, inverse: \Subscription.category)
     var subscriptions: [Subscription]
 
+    // MARK: - Initialization
     init(name: String, colorHex: String, icon: String) {
         self.id = UUID()
         self.name = name
@@ -18,6 +21,7 @@ final class Category {
         self.subscriptions = []
     }
 
+    // MARK: - Static
     static let defaults: [(name: String, colorHex: String, icon: String)] = [
         ("Streaming", "#FF6B6B", "play.tv"),
         ("Software", "#4ECDC4", "laptopcomputer"),

@@ -12,6 +12,7 @@ final class CurrencyService {
         self.modelContext = modelContext
     }
 
+    // MARK: - Public
     func convert(amount: Decimal, from sourceCurrency: String, to targetCurrency: String) async -> Decimal {
         if sourceCurrency == targetCurrency { return amount }
         guard let rate = await getRate(from: sourceCurrency, to: targetCurrency) else {
@@ -28,6 +29,7 @@ final class CurrencyService {
         await fetchRates(baseCurrency: baseCurrency)
     }
 
+    // MARK: - Private
     private func getRate(from source: String, to target: String) async -> Double? {
         if let cached = fetchCachedRate(baseCurrency: source), let rate = cached.rates[target] {
             return rate

@@ -1,17 +1,19 @@
 import Foundation
 
 enum BillingCycleCalculator {
+
+    // MARK: - Public
     static func nextDueDate(from date: Date, cycle: BillingCycle) -> Date {
         let calendar = Calendar.current
         switch cycle {
         case .weekly:
-            return calendar.date(byAdding: .day, value: 7, to: date)!
+            return calendar.date(byAdding: .day, value: 7, to: date) ?? date
         case .monthly:
-            return calendar.date(byAdding: .month, value: 1, to: date)!
+            return calendar.date(byAdding: .month, value: 1, to: date) ?? date
         case .quarterly:
-            return calendar.date(byAdding: .month, value: 3, to: date)!
+            return calendar.date(byAdding: .month, value: 3, to: date) ?? date
         case .yearly:
-            return calendar.date(byAdding: .year, value: 1, to: date)!
+            return calendar.date(byAdding: .year, value: 1, to: date) ?? date
         }
     }
 
