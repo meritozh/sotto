@@ -11,3 +11,7 @@ DerivedData/
 .tuist-bin/
 .tuist-version
 Derived/
+
+# Agent
+docs/superpowers
+.sisyphus/
