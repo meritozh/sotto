@@ -22,3 +22,16 @@ extension View {
         modifier(CardModifier())
     }
 }
+
+#Preview {
+    VStack(alignment: .leading, spacing: 4) {
+        Text("Monthly Total")
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+        Text("$125.00")
+            .font(.largeTitle.bold())
+    }
+    .cardStyle()
+    .frame(width: 300)
+    .padding()
+}

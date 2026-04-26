@@ -47,3 +47,8 @@ struct PaymentMethodForm: View {
         .frame(width: 360, height: 240)
     }
 }
+
+#Preview {
+    @Previewable @State var shown = true
+    PaymentMethodForm(isPresented: $shown) { _ in }
+}

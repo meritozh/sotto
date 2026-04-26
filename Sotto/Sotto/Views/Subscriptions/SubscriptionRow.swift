@@ -53,3 +53,14 @@ struct SubscriptionRow: View {
         .padding(.vertical, 4)
     }
 }
+
+#Preview {
+    VStack(spacing: 0) {
+        SubscriptionRow(subscription: makeSampleSubscription())
+            .padding(.horizontal)
+        Divider().padding(.leading)
+        SubscriptionRow(subscription: makeSampleSubscription(name: "Netflix", icon: "play.tv", amount: 16, daysUntilDue: 7))
+            .padding(.horizontal)
+    }
+    .frame(width: 400)
+}

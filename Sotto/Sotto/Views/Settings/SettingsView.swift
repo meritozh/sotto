@@ -116,3 +116,10 @@ struct SettingsView: View {
         }
     }
 }
+
+#Preview {
+    NavigationStack {
+        SettingsView()
+    }
+    .modelContainer(makePreviewContainer())
+}

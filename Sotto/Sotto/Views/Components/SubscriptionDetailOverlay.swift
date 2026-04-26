@@ -45,3 +45,9 @@ struct SubscriptionDetailOverlay: View {
         .animation(.easeInOut(duration: AppConstants.overlayAnimationDuration), value: selectedSubscription?.id)
     }
 }
+
+#Preview {
+    @Previewable @State var sub: Subscription? = makeSampleSubscription()
+    SubscriptionDetailOverlay(selectedSubscription: $sub)
+        .frame(width: 600, height: 400)
+}

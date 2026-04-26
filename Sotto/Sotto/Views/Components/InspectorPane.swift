@@ -213,3 +213,8 @@ struct InspectorPane: View {
         }
     }
 }
+
+#Preview {
+    InspectorPane(subscription: makeSampleSubscription())
+        .frame(width: 320)
+}

@@ -7,7 +7,8 @@ struct SubscriptionListView: View {
 
     @Query(sort: \Subscription.nextDueDate) private var subscriptions: [Subscription]
     @Query private var categories: [Category]
-    @Binding var selectedSubscription: Subscription?
+    @State private var selectedSubscription: Subscription?
+    @State private var inspectorReady = false
     @State private var searchText = ""
     @State private var statusFilter: SubscriptionStatus? = .active
     @State private var categoryFilter: Category?
@@ -29,24 +30,51 @@ struct SubscriptionListView: View {
     // MARK: - Body
 
     var body: some View {
-        List(filteredSubscriptions, selection: $selectedSubscription) { subscription in
-            #if os(iOS)
-            Button {
-                selectedSubscription = subscription
-            } label: {
-                SubscriptionRow(subscription: subscription)
+        Group {
+            if inspectorReady {
+                listContent
+                    .inspector(isPresented: Binding(
+                        get: { selectedSubscription != nil },
+                        set: { if !$0 { selectedSubscription = nil } }
+                    )) {
+                        if let sub = selectedSubscription {
+                            InspectorPane(subscription: sub)
+                        }
+                    }
+            } else {
+                listContent
             }
-            .buttonStyle(.plain)
-            .contextMenu {
-                subscriptionContextMenuItems(for: subscription)
-            }
-            #else
-            SubscriptionRow(subscription: subscription)
-                .tag(subscription)
-                .contextMenu {
-                    subscriptionContextMenuItems(for: subscription)
+        }
+        // .task runs asynchronously on the next actor turn, after the
+        // tab-switch layout pass completes, so .inspector's NSSplitViewController
+        // backing is never created during an in-progress AppKit layout.
+        .task { inspectorReady = true }
+    }
+
+    // MARK: - Private Views
+
+    private var listContent: some View {
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(filteredSubscriptions) { subscription in
+                    SubscriptionRow(subscription: subscription)
+                        .padding(.horizontal)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if selectedSubscription?.id == subscription.id {
+                                selectedSubscription = nil
+                            } else {
+                                selectedSubscription = subscription
+                            }
+                        }
+                        .contextMenu {
+                            subscriptionContextMenuItems(for: subscription)
+                        }
+
+                    Divider()
+                        .padding(.leading)
                 }
-            #endif
+            }
         }
         .searchable(text: $searchText, prompt: "Search subscriptions")
         .toolbar {
@@ -106,3 +134,11 @@ struct SubscriptionListView: View {
         modelContext.delete(subscription)
     }
 }
+
+#Preview {
+    NavigationStack {
+        SubscriptionListView()
+    }
+    .modelContainer(makePreviewContainer())
+}
+

@@ -147,3 +147,10 @@ struct CategoriesView: View {
         newIcon = "tag"
     }
 }
+
+#Preview {
+    NavigationStack {
+        CategoriesView()
+    }
+    .modelContainer(makePreviewContainer())
+}

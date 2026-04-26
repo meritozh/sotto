@@ -5,8 +5,8 @@ let project = Project(
     settings: .settings(
         base: [
             "SWIFT_VERSION": "6.0",
-            "MACOSX_DEPLOYMENT_TARGET": "14.0",
-            "IPHONEOS_DEPLOYMENT_TARGET": "17.0",
+            "MACOSX_DEPLOYMENT_TARGET": "26.0",
+            "IPHONEOS_DEPLOYMENT_TARGET": "19.0",
         ]
     ),
     targets: [
@@ -15,7 +15,7 @@ let project = Project(
             destinations: [.iPhone, .iPad, .mac],
             product: .app,
             bundleId: "com.sotto.app",
-            deploymentTargets: .multiplatform(iOS: "17.0", macOS: "14.0"),
+            deploymentTargets: .multiplatform(iOS: "19.0", macOS: "26.0"),
             infoPlist: .extendingDefault(
                 with: [
                     "LSApplicationCategoryType": "public.app-category.finance",
@@ -40,7 +40,7 @@ let project = Project(
             destinations: .macOS,
             product: .unitTests,
             bundleId: "com.sotto.app.tests",
-            deploymentTargets: .macOS("14.0"),
+            deploymentTargets: .macOS("26.0"),
             infoPlist: .extendingDefault(with: [:]),
             sources: ["SottoTests/**"],
             dependencies: [
@@ -53,7 +53,7 @@ let project = Project(
             name: "Sotto",
             shared: true,
             buildAction: .buildAction(targets: ["Sotto"]),
-            runAction: .runAction(configuration: .debug),
+            runAction: .runAction(configuration: .debug, executable: .executable(.target("Sotto"))),
             archiveAction: .archiveAction(configuration: .release)
         ),
         .scheme(

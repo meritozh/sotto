@@ -6,7 +6,6 @@ struct CalendarView: View {
     // MARK: - Properties
 
     @Query private var allSubscriptions: [Subscription]
-    @Binding var selectedSubscription: Subscription?
     @State private var displayedMonth = Date()
 
     // MARK: - Computed Properties
@@ -155,10 +154,12 @@ struct CalendarView: View {
             RoundedRectangle(cornerRadius: 4)
                 .fill(!subs.isEmpty ? Color.accentColor.opacity(0.05) : Color.clear)
         )
-        .onTapGesture {
-            if let first = subs.first {
-                selectedSubscription = first
-            }
-        }
     }
+}
+
+#Preview {
+    NavigationStack {
+        CalendarView()
+    }
+    .modelContainer(makePreviewContainer())
 }

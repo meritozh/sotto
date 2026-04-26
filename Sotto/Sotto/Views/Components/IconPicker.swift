@@ -49,3 +49,8 @@ struct IconPicker: View {
         .frame(width: 400)
     }
 }
+
+#Preview {
+    @Previewable @State var icon = "laptopcomputer"
+    IconPicker(selectedIcon: $icon)
+}

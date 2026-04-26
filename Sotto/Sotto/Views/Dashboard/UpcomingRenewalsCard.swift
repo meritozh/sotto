@@ -63,3 +63,9 @@ struct UpcomingRenewalsCard: View {
             .foregroundStyle(isUrgent ? .red : .secondary)
     }
 }
+
+#Preview {
+    UpcomingRenewalsCard(activeSubscriptions: makeSampleSubscriptions())
+        .frame(width: 300)
+        .padding()
+}

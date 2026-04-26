@@ -76,3 +76,9 @@ struct CategoryChart: View {
         .cardStyle()
     }
 }
+
+#Preview {
+    CategoryChart(activeSubscriptions: makeSampleSubscriptions(), exchangeRate: nil)
+        .frame(width: 300)
+        .padding()
+}

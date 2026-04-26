@@ -40,3 +40,12 @@ struct CurrencyPicker: View {
         }
     }
 }
+
+#Preview {
+    @Previewable @State var currency = "USD"
+    Form {
+        CurrencyPicker(selectedCurrency: $currency)
+    }
+    .formStyle(.grouped)
+    .frame(width: 400)
+}

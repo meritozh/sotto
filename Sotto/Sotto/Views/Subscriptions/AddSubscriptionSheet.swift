@@ -180,3 +180,13 @@ struct AddSubscriptionSheet: View {
         return due
     }
 }
+
+#Preview("New") {
+    AddSubscriptionSheet()
+        .modelContainer(makePreviewContainer())
+}
+
+#Preview("Edit") {
+    AddSubscriptionSheet(existingSubscription: makeSampleSubscription())
+        .modelContainer(makePreviewContainer())
+}

@@ -51,3 +51,9 @@ struct SpendingCard: View {
         .cardStyle()
     }
 }
+
+#Preview {
+    SpendingCard(activeSubscriptions: makeSampleSubscriptions(), exchangeRate: nil)
+        .frame(width: 300)
+        .padding()
+}

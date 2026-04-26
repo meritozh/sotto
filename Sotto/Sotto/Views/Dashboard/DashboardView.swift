@@ -37,26 +37,11 @@ struct DashboardView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
-                if isCompact {
-                    SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
-                    CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
-                    UpcomingRenewalsCard(activeSubscriptions: activeSubscriptions)
-                    recentActivityCard
-                } else {
-                    HStack(alignment: .top, spacing: 16) {
-                        SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
-                            .frame(maxHeight: .infinity)
-                        CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
-                            .frame(maxHeight: .infinity)
-                    }
-                    HStack(alignment: .top, spacing: 16) {
-                        UpcomingRenewalsCard(activeSubscriptions: activeSubscriptions)
-                            .frame(maxHeight: .infinity)
-                        recentActivityCard
-                            .frame(maxHeight: .infinity)
-                    }
-                }
+            MasonryLayout(columns: isCompact ? 1 : 2, spacing: 16) {
+                SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
+                CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
+                UpcomingRenewalsCard(activeSubscriptions: activeSubscriptions)
+                recentActivityCard
             }
             .padding()
         }
@@ -101,4 +86,11 @@ struct DashboardView: View {
         }
         .cardStyle()
     }
+}
+
+#Preview {
+    NavigationStack {
+        DashboardView()
+    }
+    .modelContainer(makePreviewContainer())
 }
