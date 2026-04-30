@@ -6,10 +6,17 @@ enum BillingCycle: String, Codable, CaseIterable {
     case weekly
     case monthly
     case quarterly
+    case halfYearly
     case yearly
 
     var displayName: String {
-        rawValue.capitalized
+        switch self {
+        case .weekly: return "Weekly"
+        case .monthly: return "Monthly"
+        case .quarterly: return "Quarterly"
+        case .halfYearly: return "Half-Yearly"
+        case .yearly: return "Yearly"
+        }
     }
 }
 

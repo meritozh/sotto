@@ -12,6 +12,8 @@ enum BillingCycleCalculator {
             return calendar.date(byAdding: .month, value: 1, to: date) ?? date
         case .quarterly:
             return calendar.date(byAdding: .month, value: 3, to: date) ?? date
+        case .halfYearly:
+            return calendar.date(byAdding: .month, value: 6, to: date) ?? date
         case .yearly:
             return calendar.date(byAdding: .year, value: 1, to: date) ?? date
         }
@@ -25,6 +27,8 @@ enum BillingCycleCalculator {
             return amount
         case .quarterly:
             return amount / 3
+        case .halfYearly:
+            return amount / 6
         case .yearly:
             return amount / 12
         }

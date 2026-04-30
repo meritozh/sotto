@@ -7,7 +7,7 @@ struct SpendingCard: View {
 
     let activeSubscriptions: [Subscription]
     let exchangeRate: ExchangeRate?
-    @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
+    @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "CNY"
 
     // MARK: - Computed Properties
 
