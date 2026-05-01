@@ -2,6 +2,11 @@
 
 A multiplatform subscription tracker for iOS, iPadOS, and macOS. Sotto helps you keep tabs on recurring charges — what you pay, when it renews, and how it adds up across categories and currencies.
 
+<div>
+    <img src="./snapshots/dashboard.png" width="480">
+    <img src="./snapshots/subscriptions.png" width="480">
+</div>
+
 ## Features
 
 - Track subscriptions with name, icon, amount, currency, and billing cycle (weekly, monthly, quarterly, half-yearly, yearly).
