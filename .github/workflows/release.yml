@@ -36,6 +36,9 @@ jobs:
 
       - name: Tuist Install By Mise
         uses: jdx/mise-action@v4
+        with:
+          tool_versions: |
+            spm:tuist/tuist latest
 
       - name: Generate Xcode project
         run: tuist generate --no-open
