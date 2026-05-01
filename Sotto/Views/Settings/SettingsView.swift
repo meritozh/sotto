@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 
 struct SettingsView: View {
 
@@ -11,6 +12,13 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var isRefreshingRates = false
     @State private var showAddPaymentMethod = false
+
+    @State private var exportDocument: SottoBackupDocument?
+    @State private var showExporter = false
+    @State private var showImporter = false
+    @State private var pendingImport: ExportPayload?
+    @State private var importSummary: String?
+    @State private var alertMessage: String?
 
     // MARK: - Computed Properties
 
@@ -87,6 +95,24 @@ struct SettingsView: View {
                 }
             }
 
+            Section("Data") {
+                Button {
+                    prepareExport()
+                } label: {
+                    Label("Export Data…", systemImage: "square.and.arrow.up")
+                }
+
+                Button {
+                    showImporter = true
+                } label: {
+                    Label("Import Data…", systemImage: "square.and.arrow.down")
+                }
+
+                Text("Export creates a JSON backup of all subscriptions, categories, payment methods, and payment history. Import lets you restore that backup into this app.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
             Section("About") {
                 LabeledContent("Version") {
                     Text("1.0.0")
@@ -103,6 +129,56 @@ struct SettingsView: View {
                 modelContext.insert(method)
             }
         }
+        .fileExporter(
+            isPresented: $showExporter,
+            document: exportDocument,
+            contentType: .json,
+            defaultFilename: defaultExportFilename()
+        ) { result in
+            if case .failure(let error) = result {
+                alertMessage = "Export failed: \(error.localizedDescription)"
+            }
+            exportDocument = nil
+        }
+        .fileImporter(
+            isPresented: $showImporter,
+            allowedContentTypes: [.json]
+        ) { result in
+            handleImportPick(result)
+        }
+        .confirmationDialog(
+            importSummary ?? "Import data?",
+            isPresented: Binding(
+                get: { pendingImport != nil },
+                set: { if !$0 { pendingImport = nil } }
+            ),
+            titleVisibility: .visible,
+            presenting: pendingImport
+        ) { payload in
+            Button("Replace All", role: .destructive) {
+                performImport(payload, mode: .replace)
+            }
+            Button("Merge (keep existing)") {
+                performImport(payload, mode: .merge)
+            }
+            Button("Cancel", role: .cancel) {
+                pendingImport = nil
+            }
+        } message: { _ in
+            Text("Replace All deletes existing data first. Merge keeps existing records and only adds new ones.")
+        }
+        .alert(
+            "Sotto",
+            isPresented: Binding(
+                get: { alertMessage != nil },
+                set: { if !$0 { alertMessage = nil } }
+            ),
+            presenting: alertMessage
+        ) { _ in
+            Button("OK", role: .cancel) { alertMessage = nil }
+        } message: { msg in
+            Text(msg)
+        }
     }
 
     // MARK: - Helpers
@@ -114,6 +190,57 @@ struct SettingsView: View {
         case .bank: "building.columns"
         case .other: "ellipsis.circle"
         }
+    }
+
+    private func prepareExport() {
+        do {
+            let data = try DataExportService.encodedSnapshot(from: modelContext)
+            exportDocument = SottoBackupDocument(data: data)
+            showExporter = true
+        } catch {
+            alertMessage = "Export failed: \(error.localizedDescription)"
+        }
+    }
+
+    private func handleImportPick(_ result: Result<URL, Error>) {
+        switch result {
+        case .success(let url):
+            let needsScope = url.startAccessingSecurityScopedResource()
+            defer {
+                if needsScope { url.stopAccessingSecurityScopedResource() }
+            }
+            do {
+                let data = try Data(contentsOf: url)
+                let payload = try DataExportService.decode(data)
+                importSummary = """
+                \(payload.subscriptions.count) subscriptions, \
+                \(payload.categories.count) categories, \
+                \(payload.paymentMethods.count) payment methods, \
+                \(payload.paymentHistory.count) payment records
+                """
+                pendingImport = payload
+            } catch {
+                alertMessage = "Import failed: \(error.localizedDescription)"
+            }
+        case .failure(let error):
+            alertMessage = "Import failed: \(error.localizedDescription)"
+        }
+    }
+
+    private func performImport(_ payload: ExportPayload, mode: DataExportService.ImportMode) {
+        do {
+            try DataExportService.restore(payload, into: modelContext, mode: mode)
+            alertMessage = mode == .replace ? "Data replaced successfully." : "Data merged successfully."
+        } catch {
+            alertMessage = "Import failed: \(error.localizedDescription)"
+        }
+        pendingImport = nil
+    }
+
+    private func defaultExportFilename() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return "Sotto-Backup-\(formatter.string(from: Date()))"
     }
 }
 
