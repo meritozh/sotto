@@ -1,0 +1,87 @@
+name: Release macOS App
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v0.1.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build & Release
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    env:
+      SCHEME: Sotto
+      CONFIGURATION: Release
+      ARCHIVE_PATH: build/Sotto.xcarchive
+      EXPORT_PATH: build/export
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.app
+
+      - name: Install Tuist
+        run: |
+          curl -Ls https://install.tuist.io | bash
+          tuist version
+
+      - name: Generate Xcode project
+        run: tuist generate --no-open
+
+      - name: Resolve Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -workspace Sotto.xcworkspace \
+            -scheme "$SCHEME"
+
+      - name: Archive (unsigned)
+        run: |
+          xcodebuild archive \
+            -workspace Sotto.xcworkspace \
+            -scheme "$SCHEME" \
+            -configuration "$CONFIGURATION" \
+            -destination 'generic/platform=macOS' \
+            -archivePath "$ARCHIVE_PATH" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify
+
+      - name: Package app
+        run: |
+          mkdir -p "$EXPORT_PATH"
+          cp -R "$ARCHIVE_PATH/Products/Applications/Sotto.app" "$EXPORT_PATH/"
+          cd "$EXPORT_PATH"
+          TAG="${GITHUB_REF_NAME:-${{ github.event.inputs.tag }}}"
+          ZIP_NAME="Sotto-${TAG}-macOS.zip"
+          ditto -c -k --keepParent Sotto.app "$ZIP_NAME"
+          echo "ZIP_NAME=$ZIP_NAME" >> "$GITHUB_ENV"
+          echo "ZIP_PATH=$EXPORT_PATH/$ZIP_NAME" >> "$GITHUB_ENV"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ZIP_NAME }}
+          path: ${{ env.ZIP_PATH }}
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.ZIP_PATH }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
