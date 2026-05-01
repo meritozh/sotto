@@ -23,11 +23,11 @@ final class Category {
 
     // MARK: - Static
     static let defaults: [(name: String, colorHex: String, icon: String)] = [
-        ("Streaming", "#FF6B6B", "play.tv"),
+        ("Streaming", "#1CD05A", "play.tv"),
         ("Software", "#4ECDC4", "laptopcomputer"),
-        ("Cloud Storage", "#45B7D1", "cloud"),
+        ("Cloud Storage", "#5AC8FA", "cloud"),
         ("Gaming", "#96CEB4", "gamecontroller"),
-        ("News & Media", "#FFEAA7", "newspaper"),
+        ("News & Media", "#FB7299", "newspaper"),
         ("Utilities", "#DDA0DD", "bolt"),
         ("Health & Fitness", "#98D8C8", "heart"),
         ("Other", "#B0B0B0", "ellipsis.circle")

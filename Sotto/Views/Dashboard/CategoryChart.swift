@@ -62,7 +62,7 @@ struct CategoryChart: View {
                     .foregroundStyle(DesignTokens.label3)
                     .frame(maxWidth: .infinity, minHeight: 150)
             } else {
-                HStack(alignment: .top, spacing: 18) {
+                HStack(alignment: .center, spacing: 18) {
                     Donut(slices: slices, total: total, currency: baseCurrency)
                         .frame(width: 132, height: 132)
 
