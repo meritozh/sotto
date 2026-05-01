@@ -123,6 +123,8 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
+        .scrollContentBackground(.hidden)
+        .background(DesignTokens.windowBackground)
         .navigationTitle("Settings")
         .sheet(isPresented: $showAddPaymentMethod) {
             PaymentMethodForm(isPresented: $showAddPaymentMethod) { method in

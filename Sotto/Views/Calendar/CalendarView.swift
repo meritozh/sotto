@@ -125,6 +125,7 @@ struct CalendarView: View {
                 .padding(.horizontal)
             }
         }
+        .background(DesignTokens.windowBackground)
         .navigationTitle("Calendar")
     }
 
