@@ -17,47 +17,23 @@ struct CategoriesView: View {
     // MARK: - Body
 
     var body: some View {
-        List {
-            ForEach(categories) { category in
-                HStack(spacing: 12) {
-                    Image(systemName: category.icon)
-                        .font(.title3)
-                        .foregroundStyle(Color(hex: category.colorHex))
-                        .frame(width: 32)
-
-                    VStack(alignment: .leading) {
-                        Text(category.name)
-                            .fontWeight(.medium)
-                        Text("\(category.subscriptions.count) subscriptions")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Spacer()
-
-                    let total = category.subscriptions
-                        .filter { $0.status == .active }
-                        .reduce(Decimal.zero) { $0 + BillingCycleCalculator.monthlyEquivalent(amount: $1.amount, cycle: $1.billingCycle) }
-
-                    if total > 0 {
-                        Text(total, format: .currency(code: baseCurrency))
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                        Text("/mo")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                    }
-
-                    Circle()
-                        .fill(Color(hex: category.colorHex))
-                        .frame(width: 12, height: 12)
-                }
-                .contextMenu {
-                    Button("Edit") { editingCategory = category }
-                    Button("Delete", role: .destructive) { modelContext.delete(category) }
+        ScrollView {
+            LazyVGrid(
+                columns: [GridItem(.adaptive(minimum: 200, maximum: 320), spacing: 12)],
+                alignment: .leading,
+                spacing: 12
+            ) {
+                ForEach(categories) { category in
+                    categoryCard(category)
+                        .contextMenu {
+                            Button("Edit") { editingCategory = category }
+                            Button("Delete", role: .destructive) { modelContext.delete(category) }
+                        }
                 }
             }
+            .padding(18)
         }
+        .background(DesignTokens.windowBackground)
         .navigationTitle("Categories")
         .toolbar {
             Button {
@@ -75,6 +51,47 @@ struct CategoriesView: View {
     }
 
     // MARK: - Private Views
+
+    private func categoryCard(_ category: Category) -> some View {
+        let total = category.subscriptions
+            .filter { $0.status == .active }
+            .reduce(Decimal.zero) { $0 + BillingCycleCalculator.monthlyEquivalent(amount: $1.amount, cycle: $1.billingCycle) }
+        let count = category.subscriptions.count
+
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 9) {
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color(hex: category.colorHex))
+                    .frame(width: 22, height: 22)
+                    .overlay(
+                        Image(systemName: category.icon)
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.white)
+                    )
+                Text(category.name)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(DesignTokens.label)
+                Spacer()
+            }
+
+            Text("\(count) \(count == 1 ? "subscription" : "subscriptions")")
+                .font(.system(size: 11))
+                .foregroundStyle(DesignTokens.label3)
+
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(total, format: .currency(code: baseCurrency))
+                    .font(.system(size: 22, weight: .semibold))
+                    .monospacedDigit()
+                    .kerning(-0.4)
+                    .foregroundStyle(DesignTokens.label)
+                Text("/mo")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundStyle(DesignTokens.label3)
+            }
+            .padding(.top, 2)
+        }
+        .cardStyle(paddingH: 14, paddingV: 14)
+    }
 
     private func categoryForm(editing: Category?) -> some View {
         let isEditing = editing != nil

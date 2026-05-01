@@ -46,11 +46,7 @@ struct DashboardView: View {
             .padding()
         }
         .navigationTitle("Dashboard")
-        #if os(macOS)
-        .background(Color(nsColor: .windowBackgroundColor))
-        #else
-        .background(Color(.systemGroupedBackground))
-        #endif
+        .background(DesignTokens.windowBackground)
     }
 
     // MARK: - Private Views

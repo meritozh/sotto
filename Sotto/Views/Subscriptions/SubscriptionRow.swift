@@ -2,65 +2,106 @@ import SwiftUI
 
 struct SubscriptionRow: View {
     let subscription: Subscription
+    var isSelected: Bool = false
 
     // MARK: - Body
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: subscription.icon)
-                .font(.title2)
-                .frame(width: 36, height: 36)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(subscription.category.map { Color(hex: $0.colorHex).opacity(0.2) } ?? Color.gray.opacity(0.1))
-                )
+            iconBadge
+                .frame(width: 36, alignment: .leading)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(subscription.name)
-                    .font(.body)
-                    .fontWeight(.medium)
-                HStack(spacing: 4) {
-                    Text(subscription.billingCycle.displayName)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(DesignTokens.label)
+                    .lineLimit(1)
+
+                HStack(spacing: 6) {
                     if let category = subscription.category {
-                        Text("\u{00B7}")
-                            .foregroundStyle(.secondary)
+                        Circle()
+                            .fill(Color(hex: category.colorHex))
+                            .frame(width: 7, height: 7)
                         Text(category.name)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Uncategorized")
                     }
                 }
+                .font(.system(size: 11))
+                .foregroundStyle(DesignTokens.label3)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer()
+            Text(subscription.billingCycle.displayName)
+                .font(.system(size: 12))
+                .foregroundStyle(DesignTokens.label2)
+                .frame(width: 130, alignment: .leading)
+
+            Text(subscription.nextDueDate, format: .dateTime.month(.abbreviated).day())
+                .font(.system(size: 12))
+                .foregroundStyle(DesignTokens.label2)
+                .monospacedDigit()
+                .frame(width: 130, alignment: .leading)
 
             VStack(alignment: .trailing, spacing: 2) {
                 Text(subscription.amount, format: .currency(code: subscription.currencyCode))
-                    .font(.body)
-                    .fontWeight(.medium)
-                if subscription.status == .active {
-                    Text(subscription.daysUntilDue <= 0 ? "Due today" : "in \(subscription.daysUntilDue) days")
-                        .font(.caption)
-                        .foregroundStyle(subscription.daysUntilDue <= AppConstants.urgentDaysThreshold ? .red : .secondary)
-                } else {
-                    Text(subscription.status.displayName)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(DesignTokens.label)
+                    .monospacedDigit()
+                Text(dueLabel)
+                    .font(.system(size: 11, weight: isSoon ? .medium : .regular))
+                    .foregroundStyle(isSoon ? DesignTokens.dueSoon : DesignTokens.label3)
+                    .monospacedDigit()
             }
+            .frame(width: 110, alignment: .trailing)
         }
-        .padding(.vertical, 4)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 10)
+        .frame(height: 56)
+        .background(isSelected ? DesignTokens.accentTint : Color.clear)
+    }
+
+    // MARK: - Subviews
+
+    private var iconBadge: some View {
+        let bg = subscription.category.map { Color(hex: $0.colorHex) } ?? Color(hex: "#8a8f99")
+        return RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .fill(bg)
+            .frame(width: 32, height: 32)
+            .overlay(
+                Image(systemName: subscription.icon)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(.white)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(Color.black.opacity(0.06), lineWidth: 0.5)
+            )
+    }
+
+    // MARK: - Helpers
+
+    private var isSoon: Bool {
+        subscription.status == .active && subscription.daysUntilDue <= AppConstants.soonDaysThreshold
+    }
+
+    private var dueLabel: String {
+        guard subscription.status == .active else { return subscription.status.displayName }
+        let days = subscription.daysUntilDue
+        if days <= 0 { return "today" }
+        if days == 1 { return "tomorrow" }
+        return "in \(days) days"
     }
 }
 
 #Preview {
     VStack(spacing: 0) {
         SubscriptionRow(subscription: makeSampleSubscription())
-            .padding(.horizontal)
-        Divider().padding(.leading)
-        SubscriptionRow(subscription: makeSampleSubscription(name: "Netflix", icon: "play.tv", amount: 16, daysUntilDue: 7))
-            .padding(.horizontal)
+        Divider()
+        SubscriptionRow(subscription: makeSampleSubscription(name: "Netflix", icon: "play.tv", amount: 16, daysUntilDue: 7), isSelected: true)
+        Divider()
+        SubscriptionRow(subscription: makeSampleSubscription(name: "Spotify", icon: "music.note", amount: 10, billingCycle: .yearly, daysUntilDue: 120))
     }
-    .frame(width: 400)
+    .frame(width: 720)
+    .background(DesignTokens.windowBackground)
 }

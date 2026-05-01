@@ -55,10 +55,13 @@ struct SubscriptionListView: View {
 
     private var listContent: some View {
         ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(filteredSubscriptions) { subscription in
-                    SubscriptionRow(subscription: subscription)
-                        .padding(.horizontal)
+            LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                Section {
+                    ForEach(filteredSubscriptions) { subscription in
+                        SubscriptionRow(
+                            subscription: subscription,
+                            isSelected: selectedSubscription?.id == subscription.id
+                        )
                         .contentShape(Rectangle())
                         .onTapGesture {
                             if selectedSubscription?.id == subscription.id {
@@ -71,11 +74,16 @@ struct SubscriptionListView: View {
                             subscriptionContextMenuItems(for: subscription)
                         }
 
-                    Divider()
-                        .padding(.leading)
+                        Rectangle()
+                            .fill(DesignTokens.contentDivider)
+                            .frame(height: 0.5)
+                    }
+                } header: {
+                    columnHeader
                 }
             }
         }
+        .background(DesignTokens.windowBackground)
         .searchable(text: $searchText, prompt: "Search subscriptions")
         .toolbar {
             ToolbarItem {
@@ -106,6 +114,32 @@ struct SubscriptionListView: View {
             AddSubscriptionSheet()
         }
         .navigationTitle("All Subscriptions")
+    }
+
+    // MARK: - Column Header
+
+    private var columnHeader: some View {
+        HStack(spacing: 12) {
+            Color.clear.frame(width: 36, height: 0)
+            Text("Name")
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text("Cycle")
+                .frame(width: 130, alignment: .leading)
+            Text("Next renewal")
+                .frame(width: 130, alignment: .leading)
+            Text("Amount")
+                .frame(width: 110, alignment: .trailing)
+        }
+        .font(.system(size: 11, weight: .semibold))
+        .foregroundStyle(DesignTokens.label3)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 6)
+        .background(DesignTokens.windowBackground)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(DesignTokens.contentDivider)
+                .frame(height: 0.5)
+        }
     }
 
     // MARK: - Actions

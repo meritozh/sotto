@@ -8,6 +8,7 @@ struct SidebarView: View {
     @Binding var selection: SidebarDestination
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
     @Query private var allSubscriptions: [Subscription]
+    @Query private var categories: [Category]
     @Query private var exchangeRates: [ExchangeRate]
 
     // MARK: - Computed Properties
@@ -41,7 +42,7 @@ struct SidebarView: View {
         List(selection: $selection) {
             ForEach(SidebarDestination.allCases, id: \.self) { dest in
                 Label(dest.label, systemImage: dest.icon)
-                    .badge(dest == .subscriptions ? urgentCount : 0)
+                    .badge(badge(for: dest))
             }
 
             Section("Quick Stats") {
@@ -57,6 +58,16 @@ struct SidebarView: View {
             }
         }
         .listStyle(.sidebar)
+    }
+
+    // MARK: - Helpers
+
+    private func badge(for dest: SidebarDestination) -> Int {
+        switch dest {
+        case .subscriptions: return activeSubscriptions.count
+        case .categories:    return categories.count
+        default:             return 0
+        }
     }
 }
 
