@@ -5,7 +5,7 @@ struct SidebarView: View {
 
     // MARK: - Properties
 
-    @Binding var selection: SidebarDestination
+    @Binding var selection: SidebarDestination?
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
     @Query private var allSubscriptions: [Subscription]
     @Query private var categories: [Category]
@@ -72,7 +72,7 @@ struct SidebarView: View {
 }
 
 #Preview {
-    @Previewable @State var selection = SidebarDestination.dashboard
+    @Previewable @State var selection: SidebarDestination? = .dashboard
     SidebarView(selection: $selection)
         .modelContainer(makePreviewContainer())
 }

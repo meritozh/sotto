@@ -14,11 +14,11 @@ enum PaymentMethodType: String, Codable, CaseIterable {
 final class PaymentMethod {
 
     // MARK: - Properties
-    @Attribute(.unique) var id: UUID
-    var name: String
-    var type: PaymentMethodType
+    var id: UUID = UUID()
+    var name: String = ""
+    var type: PaymentMethodType = PaymentMethodType.other
     @Relationship(deleteRule: .nullify, inverse: \Subscription.paymentMethod)
-    var subscriptions: [Subscription]
+    var subscriptions: [Subscription]?
 
     // MARK: - Initialization
     init(name: String, type: PaymentMethodType) {

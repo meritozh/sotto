@@ -5,9 +5,10 @@ import SwiftData
 final class ExchangeRate {
 
     // MARK: - Properties
-    @Attribute(.unique) var baseCurrency: String
-    var rates: [String: Double]
-    var lastUpdated: Date
+    // Uniqueness on baseCurrency is enforced in CurrencyService via upsert; CloudKit forbids @Attribute(.unique).
+    var baseCurrency: String = "USD"
+    var rates: [String: Double] = [:]
+    var lastUpdated: Date = Date.distantPast
 
     // MARK: - Initialization
     init(baseCurrency: String, rates: [String: Double]) {

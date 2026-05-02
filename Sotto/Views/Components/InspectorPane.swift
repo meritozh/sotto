@@ -191,7 +191,7 @@ struct InspectorPane: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            let sorted = subscription.paymentHistory.sorted { $0.paidDate > $1.paidDate }
+            let sorted = (subscription.paymentHistory ?? []).sorted { $0.paidDate > $1.paidDate }
             if sorted.isEmpty {
                 Text("No payments recorded")
                     .font(.caption)

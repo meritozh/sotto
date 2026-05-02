@@ -6,16 +6,18 @@ let project = Project(
         base: [
             "SWIFT_VERSION": "6.0",
             "MACOSX_DEPLOYMENT_TARGET": "26.0",
-            "IPHONEOS_DEPLOYMENT_TARGET": "19.0",
-        ]
+            "IPHONEOS_DEPLOYMENT_TARGET": "26.0",
+            "CODE_SIGN_STYLE": "Automatic",
+            "DEVELOPMENT_TEAM": "N59353RP3W",
+        ],
     ),
     targets: [
         .target(
             name: "Sotto",
             destinations: [.iPhone, .iPad, .mac],
             product: .app,
-            bundleId: "com.sotto.app",
-            deploymentTargets: .multiplatform(iOS: "19.0", macOS: "26.0"),
+            bundleId: "com.meritozh.sotto",
+            deploymentTargets: .multiplatform(iOS: "26.0", macOS: "26.0"),
             infoPlist: .extendingDefault(
                 with: [
                     "LSApplicationCategoryType": "public.app-category.finance",
@@ -39,7 +41,7 @@ let project = Project(
             name: "SottoTests",
             destinations: .macOS,
             product: .unitTests,
-            bundleId: "com.sotto.app.tests",
+            bundleId: "com.meritozh.sotto.tests",
             deploymentTargets: .macOS("26.0"),
             infoPlist: .extendingDefault(with: [:]),
             sources: ["SottoTests/**"],

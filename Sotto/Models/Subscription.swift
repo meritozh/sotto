@@ -36,22 +36,23 @@ enum SubscriptionStatus: String, Codable, CaseIterable {
 final class Subscription {
 
     // MARK: - Properties
-    @Attribute(.unique) var id: UUID
-    var name: String
-    var icon: String
-    var amount: Decimal
-    var currencyCode: String
-    var billingCycle: BillingCycle
-    var startDate: Date
-    var nextDueDate: Date
+    // CloudKit requires every attribute to be optional or have a default; uniqueness is unsupported.
+    var id: UUID = UUID()
+    var name: String = ""
+    var icon: String = ""
+    var amount: Decimal = 0
+    var currencyCode: String = "USD"
+    var billingCycle: BillingCycle = BillingCycle.monthly
+    var startDate: Date = Date.distantPast
+    var nextDueDate: Date = Date.distantPast
     var category: Category?
     var paymentMethod: PaymentMethod?
-    var status: SubscriptionStatus
+    var status: SubscriptionStatus = SubscriptionStatus.active
     var notes: String?
-    var createdAt: Date
-    var updatedAt: Date
+    var createdAt: Date = Date.distantPast
+    var updatedAt: Date = Date.distantPast
     @Relationship(deleteRule: .cascade, inverse: \PaymentHistory.subscription)
-    var paymentHistory: [PaymentHistory]
+    var paymentHistory: [PaymentHistory]?
 
     // MARK: - Initialization
     init(

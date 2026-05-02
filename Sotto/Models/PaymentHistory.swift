@@ -5,11 +5,11 @@ import SwiftData
 final class PaymentHistory {
 
     // MARK: - Properties
-    @Attribute(.unique) var id: UUID
+    var id: UUID = UUID()
     var subscription: Subscription?
-    var paidDate: Date
-    var amount: Decimal
-    var currencyCode: String
+    var paidDate: Date = Date.distantPast
+    var amount: Decimal = 0
+    var currencyCode: String = "USD"
 
     // MARK: - Initialization
     init(subscription: Subscription, paidDate: Date, amount: Decimal, currencyCode: String) {

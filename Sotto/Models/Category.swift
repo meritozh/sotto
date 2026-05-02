@@ -5,12 +5,12 @@ import SwiftData
 final class Category {
 
     // MARK: - Properties
-    @Attribute(.unique) var id: UUID
-    var name: String
-    var colorHex: String
-    var icon: String
+    var id: UUID = UUID()
+    var name: String = ""
+    var colorHex: String = "#B0B0B0"
+    var icon: String = "tag"
     @Relationship(deleteRule: .nullify, inverse: \Subscription.category)
-    var subscriptions: [Subscription]
+    var subscriptions: [Subscription]?
 
     // MARK: - Initialization
     init(name: String, colorHex: String, icon: String) {

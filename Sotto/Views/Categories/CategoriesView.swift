@@ -53,10 +53,11 @@ struct CategoriesView: View {
     // MARK: - Private Views
 
     private func categoryCard(_ category: Category) -> some View {
-        let total = category.subscriptions
+        let subs = category.subscriptions ?? []
+        let total = subs
             .filter { $0.status == .active }
             .reduce(Decimal.zero) { $0 + BillingCycleCalculator.monthlyEquivalent(amount: $1.amount, cycle: $1.billingCycle) }
-        let count = category.subscriptions.count
+        let count = subs.count
 
         return VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 9) {
