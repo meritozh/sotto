@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support — Sotto</title>
+    <meta name="description" content="Get help with Sotto. Frequently asked questions, troubleshooting, and how to reach the developer.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site">
+        <a href="./" class="brand">
+            <span class="brand__mark" aria-hidden="true"></span>
+            Sotto
+        </a>
+        <nav class="site">
+            <a href="./privacy.html">Privacy</a>
+            <a href="./support.html">Support</a>
+            <a href="https://github.com/meritozh/sotto">GitHub</a>
+        </nav>
+    </header>
+
+    <main class="shell">
+        <h1>Support</h1>
+        <p class="doc-meta">Help, FAQs, and how to reach us</p>
+
+        <div class="callout">
+            <p>Need a hand? Email <a href="mailto:meritovibecoding@outlook.com">meritovibecoding@outlook.com</a> or open an issue on <a href="https://github.com/meritozh/sotto/issues">GitHub</a>. We typically reply within a few business days.</p>
+        </div>
+
+        <h2>System requirements</h2>
+        <ul>
+            <li>iPhone and iPad — iOS / iPadOS 26.0 or later</li>
+            <li>Mac — macOS 26.0 or later</li>
+            <li>iCloud sync (optional) — an Apple Account signed in to iCloud, with iCloud Drive enabled</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+
+        <details class="faq">
+            <summary>How does Sotto sync between my iPhone, iPad, and Mac?</summary>
+            <p>Sotto uses Apple's CloudKit private database. When you are signed in to the same Apple Account on each device and have iCloud enabled for Sotto, your data syncs automatically and end-to-end through your private iCloud space. The developer never sees it.</p>
+        </details>
+
+        <details class="faq">
+            <summary>Sync isn't working between my devices. What can I check?</summary>
+            <ul>
+                <li>Confirm both devices are signed in to the same Apple Account.</li>
+                <li>Open <code>Settings → [your name] → iCloud</code> and make sure iCloud Drive is on and Sotto is enabled.</li>
+                <li>Make sure the device has an internet connection. Initial sync of a large library can take a few minutes.</li>
+                <li>If you recently upgraded the App, give it 60–90 seconds to reconcile schema changes on first launch.</li>
+                <li>Still stuck? Email us with your device model, OS version, and a description of what you see.</li>
+            </ul>
+        </details>
+
+        <details class="faq">
+            <summary>Where is my data stored?</summary>
+            <p>All subscription data lives in a local SwiftData store on your device. If iCloud sync is enabled for Sotto, the data is also stored in your private CloudKit container under your Apple Account. The developer has no access to either.</p>
+        </details>
+
+        <details class="faq">
+            <summary>How are exchange rates calculated?</summary>
+            <p>Sotto fetches daily reference rates from <a href="https://www.frankfurter.app/">Frankfurter</a>, an open-source API backed by the European Central Bank. Rates are cached on-device and refresh in the background; if you are offline, Sotto continues to use the most recently cached rates.</p>
+        </details>
+
+        <details class="faq">
+            <summary>How does Sotto handle different billing cycles?</summary>
+            <p>Each subscription has a billing cycle — weekly, monthly, quarterly, half-yearly, or yearly. Sotto normalizes everything to monthly and yearly equivalents on the dashboard so totals are comparable, regardless of the underlying cycle.</p>
+        </details>
+
+        <details class="faq">
+            <summary>Can I export my data?</summary>
+            <p>Yes. Sotto includes an export feature that produces a backup document containing your subscriptions, categories, payment methods, and history. Use it for off-site backups or to move data between Apple Accounts.</p>
+        </details>
+
+        <details class="faq">
+            <summary>Does Sotto send me notifications before a renewal?</summary>
+            <p>Upcoming renewals appear on the dashboard and in the calendar view. System notifications are evolving — keep an eye on the release notes for the current behavior on your installed version.</p>
+        </details>
+
+        <details class="faq">
+            <summary>Does Sotto use any tracking, ads, or analytics?</summary>
+            <p>No. Sotto contains no advertising SDKs, no third-party analytics, and no telemetry. See the <a href="./privacy.html">privacy policy</a> for the complete picture.</p>
+        </details>
+
+        <details class="faq">
+            <summary>I found a bug or have a feature request.</summary>
+            <p>Open an issue at <a href="https://github.com/meritozh/sotto/issues">github.com/meritozh/sotto/issues</a> or email <a href="mailto:meritovibecoding@outlook.com">meritovibecoding@outlook.com</a>. Please include your device, OS version, and steps to reproduce.</p>
+        </details>
+
+        <details class="faq">
+            <summary>How do I delete all my data?</summary>
+            <ul>
+                <li><strong>On one device:</strong> delete the App.</li>
+                <li><strong>From iCloud:</strong> open <code>Settings → [your name] → iCloud → Manage Account Storage</code>, find Sotto, and delete its data. This removes the synced copy from all your devices.</li>
+            </ul>
+        </details>
+
+        <h2>Contact</h2>
+        <p>Email: <a href="mailto:meritovibecoding@outlook.com">meritovibecoding@outlook.com</a><br>
+        GitHub Issues: <a href="https://github.com/meritozh/sotto/issues">github.com/meritozh/sotto/issues</a></p>
+    </main>
+
+    <footer class="site">
+        <p>© 2026 Sotto · <a href="./privacy.html">Privacy</a> · <a href="./support.html">Support</a></p>
+    </footer>
+</body>
+</html>
