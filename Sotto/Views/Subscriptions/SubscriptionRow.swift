@@ -3,6 +3,7 @@ import SwiftUI
 struct SubscriptionRow: View {
     let subscription: Subscription
     var isSelected: Bool = false
+    var isCompact: Bool = false
 
     // MARK: - Body
 
@@ -26,22 +27,29 @@ struct SubscriptionRow: View {
                     } else {
                         Text("Uncategorized")
                     }
+                    if isCompact {
+                        Text("·").foregroundStyle(DesignTokens.label4)
+                        Text(subscription.billingCycle.displayName)
+                    }
                 }
                 .font(.system(size: 11))
                 .foregroundStyle(DesignTokens.label3)
+                .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Text(subscription.billingCycle.displayName)
-                .font(.system(size: 12))
-                .foregroundStyle(DesignTokens.label2)
-                .frame(width: 130, alignment: .leading)
+            if !isCompact {
+                Text(subscription.billingCycle.displayName)
+                    .font(.system(size: 12))
+                    .foregroundStyle(DesignTokens.label2)
+                    .frame(width: 130, alignment: .leading)
 
-            Text(subscription.nextDueDate, format: .dateTime.month(.abbreviated).day())
-                .font(.system(size: 12))
-                .foregroundStyle(DesignTokens.label2)
-                .monospacedDigit()
-                .frame(width: 130, alignment: .leading)
+                Text(subscription.nextDueDate, format: .dateTime.month(.abbreviated).day())
+                    .font(.system(size: 12))
+                    .foregroundStyle(DesignTokens.label2)
+                    .monospacedDigit()
+                    .frame(width: 130, alignment: .leading)
+            }
 
             VStack(alignment: .trailing, spacing: 2) {
                 Text(subscription.amount, format: .currency(code: subscription.currencyCode))
@@ -53,9 +61,10 @@ struct SubscriptionRow: View {
                     .foregroundStyle(isSoon ? DesignTokens.dueSoon : DesignTokens.label3)
                     .monospacedDigit()
             }
-            .frame(width: 110, alignment: .trailing)
+            .frame(width: isCompact ? nil : 110, alignment: .trailing)
+            .fixedSize(horizontal: isCompact, vertical: false)
         }
-        .padding(.horizontal, 18)
+        .padding(.horizontal, isCompact ? 16 : 18)
         .padding(.vertical, 10)
         .frame(height: 56)
         .background(isSelected ? DesignTokens.accentTint : Color.clear)

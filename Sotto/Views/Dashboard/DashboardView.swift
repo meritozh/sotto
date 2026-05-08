@@ -47,6 +47,9 @@ struct DashboardView: View {
         }
         .navigationTitle("Dashboard")
         .background(DesignTokens.windowBackground)
+        #if os(iOS)
+        .safeAreaPadding(.bottom, 64)
+        #endif
     }
 
     // MARK: - Private Views

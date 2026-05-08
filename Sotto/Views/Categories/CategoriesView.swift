@@ -34,6 +34,9 @@ struct CategoriesView: View {
             .padding(18)
         }
         .background(DesignTokens.windowBackground)
+        #if os(iOS)
+        .safeAreaPadding(.bottom, 64)
+        #endif
         .navigationTitle("Categories")
         .toolbar {
             Button {

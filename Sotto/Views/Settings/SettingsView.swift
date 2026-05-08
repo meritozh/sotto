@@ -118,13 +118,24 @@ struct SettingsView: View {
                     Text("1.0.0")
                 }
                 LabeledContent("Platform") {
+                    #if os(iOS)
+                    Text("iOS")
+                    #elseif os(macOS)
                     Text("macOS")
+                    #else
+                    Text("Apple")
+                    #endif
                 }
             }
         }
         .formStyle(.grouped)
         .scrollContentBackground(.hidden)
         .background(DesignTokens.windowBackground)
+        #if os(iOS)
+        // iOS 26 floating tab bar overlays the bottom of the form, so push content up
+        // far enough that the last row clears the pill instead of hiding behind it.
+        .safeAreaPadding(.bottom, 64)
+        #endif
         .navigationTitle("Settings")
         .sheet(isPresented: $showAddPaymentMethod) {
             PaymentMethodForm(isPresented: $showAddPaymentMethod) { method in

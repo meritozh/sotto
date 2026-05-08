@@ -13,6 +13,18 @@ struct CalendarView: View {
     private let calendar = Calendar.current
     private let weekdaySymbols = Calendar.current.shortWeekdaySymbols
 
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
+
+    private var isCompact: Bool {
+        #if os(iOS)
+        return horizontalSizeClass == .compact
+        #else
+        return false
+        #endif
+    }
+
     private var monthTitle: String {
         displayedMonth.formatted(.dateTime.month(.wide).year())
     }
@@ -42,82 +54,47 @@ struct CalendarView: View {
     // MARK: - Body
 
     var body: some View {
+        #if os(iOS)
+        // Single ScrollView so the navigation large title shrinks smoothly on scroll
+        // (sibling-VStack-above-ScrollView breaks the iOS title-shrink animation,
+        // and safeAreaInset(.top) hides the large title at rest).
+        ScrollView {
+            VStack(spacing: 0) {
+                monthNavBar
+                if isCompact {
+                    statusLegend
+                        .padding(.horizontal)
+                        .padding(.bottom, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                weekdayHeader
+                Divider()
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 0) {
+                    ForEach(0..<leadingEmptyDays, id: \.self) { _ in
+                        Color.clear.frame(height: compactRowHeight)
+                    }
+                    ForEach(daysInMonth, id: \.self) { date in
+                        dayCell(date: date, height: compactRowHeight)
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+        .safeAreaPadding(.bottom, 64)
+        .background(DesignTokens.windowBackground)
+        .navigationTitle("Calendar")
+        #else
         VStack(spacing: 0) {
-            
-            // Month navigation
-            HStack {
-                Button {
-                    if let newMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) {
-                        displayedMonth = newMonth
-                    }
-                } label: {
-                    Image(systemName: "chevron.left")
-                }
-                .buttonStyle(.plain)
-
-                Text(monthTitle)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .frame(minWidth: 200)
-
-                Button {
-                    if let newMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) {
-                        displayedMonth = newMonth
-                    }
-                } label: {
-                    Image(systemName: "chevron.right")
-                }
-                .buttonStyle(.plain)
-
-                Button("Today") {
-                    displayedMonth = Date()
-                }
-                .buttonStyle(.bordered)
-            }
-            .padding()
-            
-            // Status legend
-            HStack(spacing: 16) {
-                Spacer()
-                ForEach(SubscriptionStatus.allCases, id: \.self) { status in
-                    HStack(spacing: 4) {
-                        Circle()
-                            .fill(status.calendarColor)
-                            .frame(width: 8, height: 8)
-                        Text(status.displayName)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            }
-            .padding(.horizontal)
-            .padding(.bottom)
-
-            // Weekday headers
-            HStack(spacing: 0) {
-                ForEach(weekdaySymbols, id: \.self) { symbol in
-                    Text(symbol)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            .padding(.horizontal)
-            .padding(.bottom, 4)
-
+            monthNavBar
+            weekdayHeader
             Divider()
-
-            // Day grid — fills remaining space
             GeometryReader { geo in
                 let totalRows = CGFloat((leadingEmptyDays + daysInMonth.count + 6) / 7)
                 let rowHeight = max(56, geo.size.height / totalRows)
-
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 0) {
                     ForEach(0..<leadingEmptyDays, id: \.self) { _ in
                         Color.clear.frame(height: rowHeight)
                     }
-
                     ForEach(daysInMonth, id: \.self) { date in
                         dayCell(date: date, height: rowHeight)
                     }
@@ -127,9 +104,109 @@ struct CalendarView: View {
         }
         .background(DesignTokens.windowBackground)
         .navigationTitle("Calendar")
+        #endif
     }
 
+    private var monthNavBar: some View {
+        HStack(spacing: 8) {
+            Button {
+                if let newMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) {
+                    displayedMonth = newMonth
+                }
+            } label: {
+                Image(systemName: "chevron.left")
+            }
+            .buttonStyle(.plain)
+
+            Text(monthTitle)
+                .font(.title2)
+                .fontWeight(.bold)
+
+            Button {
+                if let newMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) {
+                    displayedMonth = newMonth
+                }
+            } label: {
+                Image(systemName: "chevron.right")
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+
+            if !isCompact {
+                statusLegend
+            }
+
+            Button("Today") {
+                displayedMonth = Date()
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 12)
+    }
+
+    private var weekdayHeader: some View {
+        HStack(spacing: 0) {
+            ForEach(weekdaySymbols, id: \.self) { symbol in
+                Text(symbol)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.bottom, 4)
+    }
+
+    private var gridScrollView: some View {
+        ScrollView {
+            GeometryReader { geo in
+                let totalRows = CGFloat((leadingEmptyDays + daysInMonth.count + 6) / 7)
+                let macRowHeight = max(56, geo.size.height / totalRows)
+
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 7), spacing: 0) {
+                    ForEach(0..<leadingEmptyDays, id: \.self) { _ in
+                        Color.clear.frame(height: isCompact ? compactRowHeight : macRowHeight)
+                    }
+
+                    ForEach(daysInMonth, id: \.self) { date in
+                        dayCell(date: date, height: isCompact ? compactRowHeight : macRowHeight)
+                    }
+                }
+                .padding(.horizontal)
+                .frame(maxHeight: isCompact ? .infinity : nil, alignment: .top)
+            }
+            .frame(minHeight: isCompact
+                   ? CGFloat((leadingEmptyDays + daysInMonth.count + 6) / 7) * compactRowHeight
+                   : 0)
+        }
+        #if os(iOS)
+        .safeAreaPadding(.bottom, 64)
+        #endif
+    }
+
+    /// Fixed row height on iPhone so the grid is taller than the viewport
+    /// when needed, letting the navigation large-title shrink on scroll.
+    private let compactRowHeight: CGFloat = 116
+
     // MARK: - Private Views
+
+    private var statusLegend: some View {
+        HStack(spacing: 12) {
+            ForEach(SubscriptionStatus.allCases, id: \.self) { status in
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(status.calendarColor)
+                        .frame(width: 7, height: 7)
+                    Text(status.displayName)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
 
     private func dayCell(date: Date, height: CGFloat) -> some View {
         let subs = subscriptions(on: date)

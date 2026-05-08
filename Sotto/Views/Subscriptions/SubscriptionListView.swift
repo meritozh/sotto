@@ -15,6 +15,17 @@ struct SubscriptionListView: View {
     @State private var showAddSheet = false
 
     @Environment(\.modelContext) private var modelContext
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    #endif
+
+    private var isCompact: Bool {
+        #if os(iOS)
+        return horizontalSizeClass == .compact
+        #else
+        return false
+        #endif
+    }
 
     // MARK: - Computed Properties
 
@@ -55,65 +66,129 @@ struct SubscriptionListView: View {
 
     private var listContent: some View {
         ScrollView {
-            LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+            LazyVStack(spacing: 0, pinnedViews: isCompact ? [] : [.sectionHeaders]) {
                 Section {
-                    ForEach(filteredSubscriptions) { subscription in
-                        SubscriptionRow(
-                            subscription: subscription,
-                            isSelected: selectedSubscription?.id == subscription.id
-                        )
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            if selectedSubscription?.id == subscription.id {
-                                selectedSubscription = nil
-                            } else {
-                                selectedSubscription = subscription
+                    if filteredSubscriptions.isEmpty {
+                        emptyState
+                    } else {
+                        ForEach(filteredSubscriptions) { subscription in
+                            SubscriptionRow(
+                                subscription: subscription,
+                                isSelected: selectedSubscription?.id == subscription.id,
+                                isCompact: isCompact
+                            )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                if selectedSubscription?.id == subscription.id {
+                                    selectedSubscription = nil
+                                } else {
+                                    selectedSubscription = subscription
+                                }
                             }
-                        }
-                        .contextMenu {
-                            subscriptionContextMenuItems(for: subscription)
-                        }
+                            .contextMenu {
+                                subscriptionContextMenuItems(for: subscription)
+                            }
 
-                        Rectangle()
-                            .fill(DesignTokens.contentDivider)
-                            .frame(height: 0.5)
+                            Rectangle()
+                                .fill(DesignTokens.contentDivider)
+                                .frame(height: 0.5)
+                        }
                     }
                 } header: {
-                    columnHeader
+                    if !isCompact {
+                        columnHeader
+                    }
                 }
             }
         }
         .background(DesignTokens.windowBackground)
+        #if os(iOS)
+        .safeAreaPadding(.bottom, 64)
+        #endif
         .searchable(text: $searchText, prompt: "Search subscriptions")
-        .toolbar {
-            ToolbarItem {
-                Button {
-                    showAddSheet = true
-                } label: {
-                    Label("Add Subscription", systemImage: "plus")
-                }
+        .toolbar { toolbarContent }
+        .sheet(isPresented: $showAddSheet) {
+            AddSubscriptionSheet()
+        }
+        .navigationTitle("All Subscriptions")
+    }
+
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        #if os(iOS)
+        ToolbarItem(placement: .primaryAction) {
+            Button {
+                showAddSheet = true
+            } label: {
+                Label("Add Subscription", systemImage: "plus")
             }
-            ToolbarItem {
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
                 Picker("Status", selection: $statusFilter) {
                     Text("All").tag(nil as SubscriptionStatus?)
                     ForEach(SubscriptionStatus.allCases, id: \.self) { status in
                         Text(status.displayName).tag(status as SubscriptionStatus?)
                     }
                 }
-            }
-            ToolbarItem {
                 Picker("Category", selection: $categoryFilter) {
                     Text("All Categories").tag(nil as Category?)
                     ForEach(categories) { category in
                         Text(category.name).tag(category as Category?)
                     }
                 }
+            } label: {
+                Label("Filters", systemImage: "line.3.horizontal.decrease.circle")
             }
         }
-        .sheet(isPresented: $showAddSheet) {
-            AddSubscriptionSheet()
+        #else
+        ToolbarItem {
+            Button {
+                showAddSheet = true
+            } label: {
+                Label("Add Subscription", systemImage: "plus")
+            }
         }
-        .navigationTitle("All Subscriptions")
+        ToolbarItem {
+            Picker("Status", selection: $statusFilter) {
+                Text("All").tag(nil as SubscriptionStatus?)
+                ForEach(SubscriptionStatus.allCases, id: \.self) { status in
+                    Text(status.displayName).tag(status as SubscriptionStatus?)
+                }
+            }
+        }
+        ToolbarItem {
+            Picker("Category", selection: $categoryFilter) {
+                Text("All Categories").tag(nil as Category?)
+                ForEach(categories) { category in
+                    Text(category.name).tag(category as Category?)
+                }
+            }
+        }
+        #endif
+    }
+
+    private var emptyState: some View {
+        let hasFilter = !searchText.isEmpty || statusFilter != .active || categoryFilter != nil
+        return ContentUnavailableView {
+            Label(hasFilter ? "No matches" : "No subscriptions yet",
+                  systemImage: hasFilter ? "magnifyingglass" : "list.bullet.rectangle")
+        } description: {
+            Text(hasFilter
+                 ? "Try clearing filters or searching for a different name."
+                 : "Track services you pay for. Tap + to add your first subscription.")
+        } actions: {
+            if !hasFilter {
+                Button {
+                    showAddSheet = true
+                } label: {
+                    Label("Add Subscription", systemImage: "plus")
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 40)
     }
 
     // MARK: - Column Header
