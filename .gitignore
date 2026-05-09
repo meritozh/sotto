@@ -12,6 +12,10 @@ DerivedData/
 .tuist-version
 Derived/
 
+# Release
+.env.release
+*.xcarchive
+
 # Agent
 docs/superpowers
 .sisyphus/
