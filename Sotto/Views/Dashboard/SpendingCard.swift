@@ -27,7 +27,7 @@ struct SpendingCard: View {
 
     private var dueIn30: Int {
         let cutoff = Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date()
-        return activeSubscriptions.filter { $0.nextDueDate <= cutoff }.count
+        return activeSubscriptions.filter { $0.currentDueDate <= cutoff }.count
     }
 
     private var avgPerSub: Decimal {

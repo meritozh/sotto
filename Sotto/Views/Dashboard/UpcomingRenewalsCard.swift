@@ -10,7 +10,7 @@ struct UpcomingRenewalsCard: View {
     // MARK: - Computed Properties
 
     private var upcoming: [Subscription] {
-        Array(activeSubscriptions.sorted { $0.nextDueDate < $1.nextDueDate }.prefix(5))
+        Array(activeSubscriptions.sorted { $0.currentDueDate < $1.currentDueDate }.prefix(5))
     }
 
     // MARK: - Body

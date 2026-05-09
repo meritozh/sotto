@@ -5,7 +5,9 @@ struct SubscriptionListView: View {
 
     // MARK: - Properties
 
-    @Query(sort: \Subscription.nextDueDate) private var subscriptions: [Subscription]
+    // Stored startDate is the closest sortable proxy now that we don't mutate
+    // nextDueDate; fine-grained ordering is done by currentDueDate in filteredSubscriptions.
+    @Query(sort: \Subscription.startDate) private var subscriptions: [Subscription]
     @Query private var categories: [Category]
     @State private var selectedSubscription: Subscription?
     @State private var inspectorReady = false
@@ -30,12 +32,14 @@ struct SubscriptionListView: View {
     // MARK: - Computed Properties
 
     private var filteredSubscriptions: [Subscription] {
-        subscriptions.filter { sub in
-            let matchesSearch = searchText.isEmpty || sub.name.localizedCaseInsensitiveContains(searchText)
-            let matchesStatus = statusFilter == nil || sub.status == statusFilter
-            let matchesCategory = categoryFilter == nil || sub.category?.id == categoryFilter?.id
-            return matchesSearch && matchesStatus && matchesCategory
-        }
+        subscriptions
+            .filter { sub in
+                let matchesSearch = searchText.isEmpty || sub.name.localizedCaseInsensitiveContains(searchText)
+                let matchesStatus = statusFilter == nil || sub.status == statusFilter
+                let matchesCategory = categoryFilter == nil || sub.category?.id == categoryFilter?.id
+                return matchesSearch && matchesStatus && matchesCategory
+            }
+            .sorted { $0.currentDueDate < $1.currentDueDate }
     }
 
     // MARK: - Body
@@ -49,7 +53,10 @@ struct SubscriptionListView: View {
                         set: { if !$0 { selectedSubscription = nil } }
                     )) {
                         if let sub = selectedSubscription {
-                            InspectorPane(subscription: sub)
+                            InspectorPane(
+                                subscription: sub,
+                                onDelete: { deleteSubscription(sub) }
+                            )
                         }
                     }
             } else {

@@ -44,7 +44,7 @@ struct SubscriptionRow: View {
                     .foregroundStyle(DesignTokens.label2)
                     .frame(width: 130, alignment: .leading)
 
-                Text(subscription.nextDueDate, format: .dateTime.month(.abbreviated).day())
+                Text(subscription.currentDueDate, format: .dateTime.month(.abbreviated).day())
                     .font(.system(size: 12))
                     .foregroundStyle(DesignTokens.label2)
                     .monospacedDigit()

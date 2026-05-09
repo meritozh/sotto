@@ -6,9 +6,13 @@ struct InspectorPane: View {
     // MARK: - Properties
 
     @Bindable var subscription: Subscription
-    @Environment(\.modelContext) private var modelContext
     @State private var showEditSheet = false
+    @State private var showDeleteAlert = false
     var onClose: (() -> Void)?
+    /// Invoked after the user confirms deletion in the alert. The parent owns the
+    /// model context and selection state, so it must clear the selection before
+    /// deleting to avoid the inspector re-rendering against a tombstoned model.
+    var onDelete: (() -> Void)?
 
     // MARK: - Body
 
@@ -69,12 +73,22 @@ struct InspectorPane: View {
                 }
                 LabeledContent("Next Due") {
                     VStack(alignment: .trailing) {
-                        Text(subscription.nextDueDate, format: .dateTime.month(.abbreviated).day().year())
+                        Text(subscription.currentDueDate, format: .dateTime.month(.abbreviated).day().year())
                         if subscription.status == .active {
                             Text(subscription.daysUntilDue <= 0 ? "Due today" : "in \(subscription.daysUntilDue) days")
                                 .font(.caption)
                                 .foregroundStyle(subscription.daysUntilDue <= AppConstants.urgentDaysThreshold ? .red : .secondary)
                         }
+                    }
+                }
+                LabeledContent("Total Spent") {
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(subscription.totalCost, format: .currency(code: subscription.currencyCode))
+                            .fontWeight(.semibold)
+                            .monospacedDigit()
+                        Text("since \(subscription.startDate, format: .dateTime.month(.abbreviated).day().year())")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
                 if let method = subscription.paymentMethod {
@@ -96,16 +110,6 @@ struct InspectorPane: View {
 
                 // Quick Actions
                 VStack(spacing: 8) {
-                    if subscription.status == .active {
-                        Button {
-                            markAsPaid()
-                        } label: {
-                            Label("Mark as Paid", systemImage: "checkmark.circle")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-
                     HStack(spacing: 8) {
                         if subscription.status == .active {
                             Button {
@@ -142,17 +146,29 @@ struct InspectorPane: View {
                                 .frame(maxWidth: .infinity)
                         }
                     }
+
+                    if onDelete != nil {
+                        Button(role: .destructive) {
+                            showDeleteAlert = true
+                        } label: {
+                            Label("Delete…", systemImage: "trash")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
                 }
-
-                Divider()
-
-                // Payment History
-                paymentHistorySection
             }
             .padding()
         }
         .sheet(isPresented: $showEditSheet) {
             AddSubscriptionSheet(existingSubscription: subscription)
+        }
+        .alert("Delete \(subscription.name)?", isPresented: $showDeleteAlert) {
+            Button("Delete", role: .destructive) {
+                onDelete?()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This permanently removes the subscription from Sotto. This action cannot be undone.")
         }
     }
 
@@ -166,52 +182,6 @@ struct InspectorPane: View {
         }
     }
 
-    // MARK: - Actions
-
-    private func markAsPaid() {
-        let payment = PaymentHistory(
-            subscription: subscription,
-            paidDate: Date(),
-            amount: subscription.amount,
-            currencyCode: subscription.currencyCode
-        )
-        modelContext.insert(payment)
-        subscription.nextDueDate = BillingCycleCalculator.nextDueDate(
-            from: subscription.nextDueDate,
-            cycle: subscription.billingCycle
-        )
-        subscription.updatedAt = Date()
-    }
-
-    // MARK: - Private Views
-
-    private var paymentHistorySection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Payment History")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-            let sorted = (subscription.paymentHistory ?? []).sorted { $0.paidDate > $1.paidDate }
-            if sorted.isEmpty {
-                Text("No payments recorded")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-            } else {
-                ForEach(sorted) { payment in
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                            .font(.caption)
-                        Text(payment.paidDate, format: .dateTime.month(.abbreviated).day().year())
-                            .font(.caption)
-                        Spacer()
-                        Text(payment.amount, format: .currency(code: payment.currencyCode))
-                            .font(.caption)
-                    }
-                }
-            }
-        }
-    }
 }
 
 #Preview {

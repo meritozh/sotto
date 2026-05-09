@@ -9,6 +9,8 @@ let project = Project(
             "IPHONEOS_DEPLOYMENT_TARGET": "26.0",
             "CODE_SIGN_STYLE": "Automatic",
             "DEVELOPMENT_TEAM": "N59353RP3W",
+            "MARKETING_VERSION": "1.0.0",
+            "CURRENT_PROJECT_VERSION": "1",
         ],
     ),
     targets: [
@@ -22,6 +24,8 @@ let project = Project(
                 with: [
                     "LSApplicationCategoryType": "public.app-category.finance",
                     "UILaunchScreen": [:],
+                    "CFBundleShortVersionString": "$(MARKETING_VERSION)",
+                    "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
                 ]
             ),
             sources: [

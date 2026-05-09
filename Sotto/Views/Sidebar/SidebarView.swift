@@ -19,7 +19,7 @@ struct SidebarView: View {
 
     private var urgentCount: Int {
         let cutoff = Calendar.current.date(byAdding: .day, value: AppConstants.urgentDaysThreshold, to: Date()) ?? Date()
-        return activeSubscriptions.filter { $0.nextDueDate <= cutoff }.count
+        return activeSubscriptions.filter { $0.currentDueDate <= cutoff }.count
     }
 
     private var currentExchangeRate: ExchangeRate? {

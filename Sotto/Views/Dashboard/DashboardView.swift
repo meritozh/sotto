@@ -6,8 +6,6 @@ struct DashboardView: View {
     // MARK: - Properties
 
     @Query private var allSubscriptions: [Subscription]
-    @Query(sort: \PaymentHistory.paidDate, order: .reverse)
-    private var recentPayments: [PaymentHistory]
     @Query private var exchangeRates: [ExchangeRate]
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
 
@@ -41,7 +39,6 @@ struct DashboardView: View {
                 SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
                 CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
                 UpcomingRenewalsCard(activeSubscriptions: activeSubscriptions)
-                recentActivityCard
             }
             .padding()
         }
@@ -50,40 +47,6 @@ struct DashboardView: View {
         #if os(iOS)
         .safeAreaPadding(.bottom, 64)
         #endif
-    }
-
-    // MARK: - Private Views
-
-    private var recentActivityCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Label("Recent Activity", systemImage: "clock.arrow.circlepath")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-            let recent = Array(recentPayments.prefix(5))
-            if recent.isEmpty {
-                Text("No recorded payments yet")
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, minHeight: 80)
-            } else {
-                ForEach(recent) { payment in
-                    HStack {
-                        Text(payment.subscription?.name ?? "Unknown")
-                            .lineLimit(1)
-                        Spacer()
-                        Text(payment.amount, format: .currency(code: payment.currencyCode))
-                            .font(.subheadline)
-                        Text(payment.paidDate, format: .dateTime.month(.abbreviated).day())
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    if payment.id != recent.last?.id {
-                        Divider()
-                    }
-                }
-            }
-        }
-        .cardStyle()
     }
 }
 
