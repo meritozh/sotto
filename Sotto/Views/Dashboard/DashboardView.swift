@@ -1,13 +1,18 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 struct DashboardView: View {
 
     // MARK: - Properties
 
+    var onAddSubscription: () -> Void = {}
+
     @Query private var allSubscriptions: [Subscription]
     @Query private var exchangeRates: [ExchangeRate]
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
+
+    private let addFirstSubscriptionTip = AddFirstSubscriptionTip()
 
     // MARK: - Computed Properties
 
@@ -35,6 +40,14 @@ struct DashboardView: View {
 
     var body: some View {
         ScrollView {
+            TipView(addFirstSubscriptionTip) { action in
+                if action.id == AddFirstSubscriptionTip.addActionID {
+                    onAddSubscription()
+                }
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+
             MasonryLayout(columns: isCompact ? 1 : 2, spacing: 16) {
                 SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
                 CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
@@ -47,6 +60,12 @@ struct DashboardView: View {
         #if os(iOS)
         .safeAreaPadding(.bottom, 64)
         #endif
+        .task {
+            AddFirstSubscriptionTip.subscriptionCount = allSubscriptions.count
+        }
+        .onChange(of: allSubscriptions.count) { _, newValue in
+            AddFirstSubscriptionTip.subscriptionCount = newValue
+        }
     }
 }
 

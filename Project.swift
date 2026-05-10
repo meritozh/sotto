@@ -40,6 +40,8 @@ let project = Project(
                 base: [
                     "PRODUCT_NAME": "Sotto",
                     "SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD": "NO",
+                    "ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphoneos*]": "AppIcon_iOS",
+                    "ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphonesimulator*]": "AppIcon_iOS",
                 ]
             )
         ),

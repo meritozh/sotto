@@ -7,6 +7,7 @@ struct SettingsView: View {
     // MARK: - Properties
 
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
+    @AppStorage("preferredLanguageCode") private var preferredLanguage = "system"
     @Query private var exchangeRates: [ExchangeRate]
     @Query private var paymentMethods: [PaymentMethod]
     @Environment(\.modelContext) private var modelContext
@@ -65,6 +66,18 @@ struct SettingsView: View {
                     }
                 }
                 .disabled(isRefreshingRates)
+            }
+
+            Section("Language") {
+                Picker("App Language", selection: $preferredLanguage) {
+                    Text("System Default").tag("system")
+                    Text(verbatim: "English").tag("en")
+                    Text(verbatim: "简体中文").tag("zh-Hans")
+                }
+                .onChange(of: preferredLanguage) { _, newValue in
+                    applyLanguage(newValue)
+                    alertMessage = String(localized: "Please quit and reopen Sotto for the language change to take effect.")
+                }
             }
 
             Section("Payment Methods") {
@@ -251,6 +264,16 @@ struct SettingsView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         return "Sotto-Backup-\(formatter.string(from: Date()))"
+    }
+
+    // Bundle.main resolves localized resources at launch from the AppleLanguages
+    // UserDefaults key, so writing it here takes effect on the next cold start.
+    private func applyLanguage(_ code: String) {
+        if code == "system" {
+            UserDefaults.standard.removeObject(forKey: "AppleLanguages")
+        } else {
+            UserDefaults.standard.set([code], forKey: "AppleLanguages")
+        }
     }
 }
 

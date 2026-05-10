@@ -5,6 +5,8 @@ struct SubscriptionListView: View {
 
     // MARK: - Properties
 
+    @Binding var showAddSheet: Bool
+
     // Stored startDate is the closest sortable proxy now that we don't mutate
     // nextDueDate; fine-grained ordering is done by currentDueDate in filteredSubscriptions.
     @Query(sort: \Subscription.startDate) private var subscriptions: [Subscription]
@@ -14,7 +16,6 @@ struct SubscriptionListView: View {
     @State private var searchText = ""
     @State private var statusFilter: SubscriptionStatus? = .active
     @State private var categoryFilter: Category?
-    @State private var showAddSheet = false
 
     @Environment(\.modelContext) private var modelContext
     #if os(iOS)
@@ -114,9 +115,6 @@ struct SubscriptionListView: View {
         #endif
         .searchable(text: $searchText, prompt: "Search subscriptions")
         .toolbar { toolbarContent }
-        .sheet(isPresented: $showAddSheet) {
-            AddSubscriptionSheet()
-        }
         .navigationTitle("All Subscriptions")
     }
 
@@ -253,7 +251,7 @@ struct SubscriptionListView: View {
 
 #Preview {
     NavigationStack {
-        SubscriptionListView()
+        SubscriptionListView(showAddSheet: .constant(false))
     }
     .modelContainer(makePreviewContainer())
 }

@@ -299,6 +299,9 @@
         }
       }
     },
+    "Add Your First Subscription" : {
+
+    },
     "All" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2307,6 +2310,9 @@
           }
         }
       }
+    },
+    "Track a service you pay for and see your monthly spend at a glance." : {
+
     },
     "Track services you pay for. Tap + to add your first subscription." : {
       "extractionState" : "manual",

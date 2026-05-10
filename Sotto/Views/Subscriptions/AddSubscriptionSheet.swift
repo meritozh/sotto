@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 struct AddSubscriptionSheet: View {
 
@@ -164,6 +165,7 @@ struct AddSubscriptionSheet: View {
                 notes: notes.isEmpty ? nil : notes
             )
             modelContext.insert(subscription)
+            AddFirstSubscriptionTip().invalidate(reason: .actionPerformed)
         }
 
         dismiss()
