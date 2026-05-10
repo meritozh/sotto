@@ -75,7 +75,9 @@ struct InspectorPane: View {
                     VStack(alignment: .trailing) {
                         Text(subscription.currentDueDate, format: .dateTime.month(.abbreviated).day().year())
                         if subscription.status == .active {
-                            Text(subscription.daysUntilDue <= 0 ? "Due today" : "in \(subscription.daysUntilDue) days")
+                            (subscription.daysUntilDue <= 0
+                                ? Text("Due today")
+                                : Text("in \(subscription.daysUntilDue) days"))
                                 .font(.caption)
                                 .foregroundStyle(subscription.daysUntilDue <= AppConstants.urgentDaysThreshold ? .red : .secondary)
                         }
@@ -162,7 +164,10 @@ struct InspectorPane: View {
         .sheet(isPresented: $showEditSheet) {
             AddSubscriptionSheet(existingSubscription: subscription)
         }
-        .alert("Delete \(subscription.name)?", isPresented: $showDeleteAlert) {
+        .alert(
+            String(localized: "Delete \(subscription.name)?"),
+            isPresented: $showDeleteAlert
+        ) {
             Button("Delete", role: .destructive) {
                 onDelete?()
             }

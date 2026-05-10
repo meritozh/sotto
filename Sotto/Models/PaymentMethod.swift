@@ -7,6 +7,15 @@ enum PaymentMethodType: String, Codable, CaseIterable {
     case debit
     case bank
     case other
+
+    var displayName: LocalizedStringResource {
+        switch self {
+        case .credit: "Credit"
+        case .debit: "Debit"
+        case .bank: "Bank"
+        case .other: "Other"
+        }
+    }
 }
 
 // MARK: - PaymentMethod

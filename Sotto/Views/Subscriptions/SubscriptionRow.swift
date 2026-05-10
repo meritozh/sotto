@@ -56,7 +56,7 @@ struct SubscriptionRow: View {
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(DesignTokens.label)
                     .monospacedDigit()
-                Text(dueLabel)
+                dueLabel
                     .font(.system(size: 11, weight: isSoon ? .medium : .regular))
                     .foregroundStyle(isSoon ? DesignTokens.dueSoon : DesignTokens.label3)
                     .monospacedDigit()
@@ -94,12 +94,12 @@ struct SubscriptionRow: View {
         subscription.status == .active && subscription.daysUntilDue <= AppConstants.soonDaysThreshold
     }
 
-    private var dueLabel: String {
-        guard subscription.status == .active else { return subscription.status.displayName }
+    private var dueLabel: Text {
+        guard subscription.status == .active else { return Text(subscription.status.displayName) }
         let days = subscription.daysUntilDue
-        if days <= 0 { return "today" }
-        if days == 1 { return "tomorrow" }
-        return "in \(days) days"
+        if days <= 0 { return Text("today") }
+        if days == 1 { return Text("tomorrow") }
+        return Text("in \(days) days")
     }
 }
 

@@ -50,9 +50,9 @@ struct UpcomingRenewalsCard: View {
 
     private func daysUntilBadge(for subscription: Subscription) -> some View {
         let days = subscription.daysUntilDue
-        let text = days <= 0 ? "Today" : "\(days)d"
         let isUrgent = days <= AppConstants.urgentDaysThreshold
-        return Text(text)
+        let label: Text = days <= 0 ? Text("Today") : Text("\(days)d")
+        return label
             .font(.caption)
             .fontWeight(.medium)
             .padding(.horizontal, 8)

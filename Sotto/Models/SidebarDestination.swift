@@ -10,7 +10,7 @@ enum SidebarDestination: String, CaseIterable, Identifiable {
     // MARK: - Computed Properties
     var id: String { rawValue }
 
-    var label: String {
+    var label: LocalizedStringResource {
         switch self {
         case .dashboard: "Dashboard"
         case .subscriptions: "All Subscriptions"

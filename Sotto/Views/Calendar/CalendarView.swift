@@ -195,7 +195,9 @@ struct CalendarView: View {
 
     private var weekdayHeader: some View {
         HStack(spacing: 0) {
-            ForEach(orderedWeekdaySymbols, id: \.self) { symbol in
+            // veryShortWeekdaySymbols repeats letters (e.g. en: S/M/T/W/T/F/S),
+            // so identify by position, not by the symbol itself.
+            ForEach(Array(orderedWeekdaySymbols.enumerated()), id: \.offset) { _, symbol in
                 Text(symbol)
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(DesignTokens.label3)
@@ -282,7 +284,7 @@ struct CalendarView: View {
                     .foregroundStyle(DesignTokens.label)
                 Spacer()
                 if !subs.isEmpty {
-                    Text("\(subs.count) renewal\(subs.count == 1 ? "" : "s")")
+                    Text("\(subs.count) renewals")
                         .font(.system(size: 12))
                         .foregroundStyle(DesignTokens.label3)
                         .monospacedDigit()

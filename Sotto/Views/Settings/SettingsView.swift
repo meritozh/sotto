@@ -77,7 +77,7 @@ struct SettingsView: View {
                         Image(systemName: iconForType(method.type))
                         Text(method.name)
                         Spacer()
-                        Text(method.type.rawValue.capitalized)
+                        Text(method.type.displayName)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -149,7 +149,7 @@ struct SettingsView: View {
             defaultFilename: defaultExportFilename()
         ) { result in
             if case .failure(let error) = result {
-                alertMessage = "Export failed: \(error.localizedDescription)"
+                alertMessage = String(localized: "Export failed: \(error.localizedDescription)")
             }
             exportDocument = nil
         }
@@ -160,7 +160,7 @@ struct SettingsView: View {
             handleImportPick(result)
         }
         .confirmationDialog(
-            importSummary ?? "Import data?",
+            importSummary ?? String(localized: "Import data?"),
             isPresented: Binding(
                 get: { pendingImport != nil },
                 set: { if !$0 { pendingImport = nil } }
@@ -211,7 +211,7 @@ struct SettingsView: View {
             exportDocument = SottoBackupDocument(data: data)
             showExporter = true
         } catch {
-            alertMessage = "Export failed: \(error.localizedDescription)"
+            alertMessage = String(localized: "Export failed: \(error.localizedDescription)")
         }
     }
 
@@ -225,27 +225,24 @@ struct SettingsView: View {
             do {
                 let data = try Data(contentsOf: url)
                 let payload = try DataExportService.decode(data)
-                importSummary = """
-                \(payload.subscriptions.count) subscriptions, \
-                \(payload.categories.count) categories, \
-                \(payload.paymentMethods.count) payment methods, \
-                \(payload.paymentHistory.count) payment records
-                """
+                importSummary = String(localized: "\(payload.subscriptions.count) subscriptions, \(payload.categories.count) categories, \(payload.paymentMethods.count) payment methods, \(payload.paymentHistory.count) payment records")
                 pendingImport = payload
             } catch {
-                alertMessage = "Import failed: \(error.localizedDescription)"
+                alertMessage = String(localized: "Import failed: \(error.localizedDescription)")
             }
         case .failure(let error):
-            alertMessage = "Import failed: \(error.localizedDescription)"
+            alertMessage = String(localized: "Import failed: \(error.localizedDescription)")
         }
     }
 
     private func performImport(_ payload: ExportPayload, mode: DataExportService.ImportMode) {
         do {
             try DataExportService.restore(payload, into: modelContext, mode: mode)
-            alertMessage = mode == .replace ? "Data replaced successfully." : "Data merged successfully."
+            alertMessage = mode == .replace
+                ? String(localized: "Data replaced successfully.")
+                : String(localized: "Data merged successfully.")
         } catch {
-            alertMessage = "Import failed: \(error.localizedDescription)"
+            alertMessage = String(localized: "Import failed: \(error.localizedDescription)")
         }
         pendingImport = nil
     }

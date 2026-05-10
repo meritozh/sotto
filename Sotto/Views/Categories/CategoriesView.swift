@@ -78,7 +78,7 @@ struct CategoriesView: View {
                 Spacer()
             }
 
-            Text("\(count) \(count == 1 ? "subscription" : "subscriptions")")
+            Text("\(count) subscriptions")
                 .font(.system(size: 11))
                 .foregroundStyle(DesignTokens.label3)
 

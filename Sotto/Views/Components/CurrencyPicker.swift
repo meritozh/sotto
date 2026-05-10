@@ -5,7 +5,7 @@ struct CurrencyPicker: View {
 
     // MARK: - Properties
 
-    static let currencies: [(code: String, name: String)] = [
+    static let currencies: [(code: String, name: LocalizedStringResource)] = [
         ("USD", "US Dollar"),
         ("EUR", "Euro"),
         ("GBP", "British Pound"),
@@ -35,7 +35,7 @@ struct CurrencyPicker: View {
     var body: some View {
         Picker("Currency", selection: $selectedCurrency) {
             ForEach(Self.currencies, id: \.code) { currency in
-                Text("\(currency.code) — \(currency.name)").tag(currency.code)
+                Text("\(currency.code) — \(String(localized: currency.name))").tag(currency.code)
             }
         }
     }

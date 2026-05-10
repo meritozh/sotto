@@ -9,13 +9,13 @@ enum BillingCycle: String, Codable, CaseIterable {
     case halfYearly
     case yearly
 
-    var displayName: String {
+    var displayName: LocalizedStringResource {
         switch self {
-        case .weekly: return "Weekly"
-        case .monthly: return "Monthly"
-        case .quarterly: return "Quarterly"
-        case .halfYearly: return "Half-Yearly"
-        case .yearly: return "Yearly"
+        case .weekly: "Weekly"
+        case .monthly: "Monthly"
+        case .quarterly: "Quarterly"
+        case .halfYearly: "Half-Yearly"
+        case .yearly: "Yearly"
         }
     }
 }
@@ -26,8 +26,12 @@ enum SubscriptionStatus: String, Codable, CaseIterable {
     case paused
     case cancelled
 
-    var displayName: String {
-        rawValue.capitalized
+    var displayName: LocalizedStringResource {
+        switch self {
+        case .active: "Active"
+        case .paused: "Paused"
+        case .cancelled: "Cancelled"
+        }
     }
 }
 

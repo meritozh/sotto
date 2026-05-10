@@ -22,7 +22,7 @@ struct PaymentMethodForm: View {
                 TextField("Name (e.g. Chase Visa)", text: $name)
                 Picker("Type", selection: $type) {
                     ForEach(PaymentMethodType.allCases, id: \.self) { methodType in
-                        Text(methodType.rawValue.capitalized).tag(methodType)
+                        Text(methodType.displayName).tag(methodType)
                     }
                 }
             }

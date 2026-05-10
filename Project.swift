@@ -26,6 +26,8 @@ let project = Project(
                     "UILaunchScreen": [:],
                     "CFBundleShortVersionString": "$(MARKETING_VERSION)",
                     "CFBundleVersion": "$(CURRENT_PROJECT_VERSION)",
+                    "CFBundleDevelopmentRegion": "en",
+                    "CFBundleLocalizations": ["en", "zh-Hans"],
                 ]
             ),
             sources: [
