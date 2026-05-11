@@ -1,48 +1,56 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "·" : {
-
-    },
-    "·  %@ active" : {
-
-    },
-    "·  %lld active" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "·  %lld active"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "·  %lld 个活跃"
-          }
-        }
-      }
-    },
-    "/mo" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "/mo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "/月"
-          }
-        }
-      }
-    },
     "%@" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        }
+      }
+    },
+    "%@ renewals" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ renewals"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 项续订"
+          }
+        }
+      }
+    },
+    "%@ subscriptions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ subscriptions"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 项订阅"
+          }
+        }
+      }
     },
     "%@ — %@" : {
       "extractionState" : "manual",
@@ -61,14 +69,22 @@
         }
       }
     },
-    "%@ renewals" : {
-
-    },
-    "%@ subscriptions" : {
-
-    },
     "%@d" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@d"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 天"
+          }
+        }
+      }
     },
     "%lld renewals" : {
       "extractionState" : "manual",
@@ -175,10 +191,38 @@
       }
     },
     "+%@" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%@"
+          }
+        }
+      }
     },
     "+%@ more" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+%@ more"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再 %@ 项"
+          }
+        }
+      }
     },
     "+%lld more" : {
       "extractionState" : "manual",
@@ -193,6 +237,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "+%lld 项"
+          }
+        }
+      }
+    },
+    "/mo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/mo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "/月"
           }
         }
       }
@@ -300,7 +361,21 @@
       }
     },
     "Add Your First Subscription" : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Your First Subscription"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加第一项订阅"
+          }
+        }
+      }
     },
     "All" : {
       "extractionState" : "manual",
@@ -366,6 +441,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "金额"
+          }
+        }
+      }
+    },
+    "App Language" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Language"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "应用语言"
           }
         }
       }
@@ -897,23 +989,6 @@
         }
       }
     },
-    "Due in 30d" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Due in 30d"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "30 天内到期"
-          }
-        }
-      }
-    },
     "Due Soon" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -927,6 +1002,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "即将到期"
+          }
+        }
+      }
+    },
+    "Due in 30d" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Due in 30d"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 天内到期"
           }
         }
       }
@@ -1033,23 +1125,6 @@
         }
       }
     },
-    "Export creates a JSON backup of all subscriptions, categories, payment methods, and payment history. Import lets you restore that backup into this app." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Export creates a JSON backup of all subscriptions, categories, payment methods, and payment history. Import lets you restore that backup into this app."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "导出会生成一份包含全部订阅、分类、支付方式和付款记录的 JSON 备份。导入可将该备份恢复到此 App 中。"
-          }
-        }
-      }
-    },
     "Export Data…" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1063,6 +1138,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导出数据…"
+          }
+        }
+      }
+    },
+    "Export creates a JSON backup of all subscriptions, categories, payment methods, and payment history. Import lets you restore that backup into this app." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export creates a JSON backup of all subscriptions, categories, payment methods, and payment history. Import lets you restore that backup into this app."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出会生成一份包含全部订阅、分类、支付方式和付款记录的 JSON 备份。导入可将该备份恢复到此 App 中。"
           }
         }
       }
@@ -1135,23 +1227,6 @@
         }
       }
     },
-    "Import data?" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Import data?"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "导入数据？"
-          }
-        }
-      }
-    },
     "Import Data…" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1165,6 +1240,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导入数据…"
+          }
+        }
+      }
+    },
+    "Import data?" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import data?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导入数据？"
           }
         }
       }
@@ -1186,26 +1278,6 @@
         }
       }
     },
-    "in %@ days" : {
-
-    },
-    "in %lld days" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "in %lld days"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld 天后"
-          }
-        }
-      }
-    },
     "Indian Rupee" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1219,23 +1291,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "印度卢比"
-          }
-        }
-      }
-    },
-    "iOS" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iOS"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iOS"
           }
         }
       }
@@ -1257,6 +1312,23 @@
         }
       }
     },
+    "Language" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Language"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语言"
+          }
+        }
+      }
+    },
     "Last updated: %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1274,19 +1346,19 @@
         }
       }
     },
-    "macOS" : {
+    "MONTHLY SPENDING" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "macOS"
+            "value" : "MONTHLY SPENDING"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "macOS"
+            "value" : "每月支出"
           }
         }
       }
@@ -1338,23 +1410,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每月"
-          }
-        }
-      }
-    },
-    "MONTHLY SPENDING" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MONTHLY SPENDING"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每月支出"
           }
         }
       }
@@ -1801,6 +1856,23 @@
         }
       }
     },
+    "Please quit and reopen Sotto for the language change to take effect." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please quit and reopen Sotto for the language change to take effect."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请退出并重新打开 Sotto 以应用语言更改。"
+          }
+        }
+      }
+    },
     "Polish Zloty" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1954,6 +2026,23 @@
         }
       }
     },
+    "SF Symbol" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SF Symbol"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SF 符号"
+          }
+        }
+      }
+    },
     "Save" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2001,40 +2090,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置"
-          }
-        }
-      }
-    },
-    "SF Symbol" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SF Symbol"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SF 符号"
-          }
-        }
-      }
-    },
-    "since %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "since %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自 %@"
           }
         }
       }
@@ -2192,6 +2247,23 @@
         }
       }
     },
+    "System Default" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System Default"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟随系统"
+          }
+        }
+      }
+    },
     "Taiwan Dollar" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2243,23 +2315,6 @@
         }
       }
     },
-    "today" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "today"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天"
-          }
-        }
-      }
-    },
     "Today" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2273,23 +2328,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今天"
-          }
-        }
-      }
-    },
-    "tomorrow" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "tomorrow"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "明天"
           }
         }
       }
@@ -2312,7 +2350,21 @@
       }
     },
     "Track a service you pay for and see your monthly spend at a glance." : {
-
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track a service you pay for and see your monthly spend at a glance."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟踪你订阅的服务，一眼掌握每月支出。"
+          }
+        }
+      }
     },
     "Track services you pay for. Tap + to add your first subscription." : {
       "extractionState" : "manual",
@@ -2382,6 +2434,23 @@
         }
       }
     },
+    "US Dollar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "US Dollar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "美元"
+          }
+        }
+      }
+    },
     "Uncategorized" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2412,23 +2481,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "即将续费"
-          }
-        }
-      }
-    },
-    "US Dollar" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "US Dollar"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "美元"
           }
         }
       }
@@ -2497,6 +2549,176 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "年度估算"
+          }
+        }
+      }
+    },
+    "iOS" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iOS"
+          }
+        }
+      }
+    },
+    "in %@ days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in %@ days"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 天后"
+          }
+        }
+      }
+    },
+    "in %lld days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in %lld days"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 天后"
+          }
+        }
+      }
+    },
+    "macOS" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS"
+          }
+        }
+      }
+    },
+    "since %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "since %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自 %@"
+          }
+        }
+      }
+    },
+    "today" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "today"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天"
+          }
+        }
+      }
+    },
+    "tomorrow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tomorrow"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "明天"
+          }
+        }
+      }
+    },
+    "·" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "·"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "·"
+          }
+        }
+      }
+    },
+    "·  %@ active" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "·  %@ active"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "·  %@ 个活跃"
+          }
+        }
+      }
+    },
+    "·  %lld active" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "·  %lld active"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "·  %lld 个活跃"
           }
         }
       }

@@ -20,7 +20,9 @@ struct AddFirstSubscriptionTip: Tip {
     }
 
     var actions: [Action] {
-        Action(id: Self.addActionID, title: "Add Subscription")
+        // TipKit Action.title is a StringProtocol, not auto-localized like SwiftUI Text;
+        // resolve through the catalog explicitly so it picks up the current language.
+        Action(id: Self.addActionID, title: String(localized: "Add Subscription"))
     }
 
     var rules: [Rule] {
