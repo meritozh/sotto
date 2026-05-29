@@ -1,6 +1,6 @@
 import Testing
 import Foundation
-@testable import Sotto
+@testable import SottoKit
 
 @Suite("BillingCycleCalculator Tests")
 struct BillingCycleCalculatorTests {

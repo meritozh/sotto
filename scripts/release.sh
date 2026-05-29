@@ -82,12 +82,12 @@ if [[ "$key_found" != true ]]; then
     exit 1
 fi
 
-# ---------- Read current versions from Project.swift ----------
-current_marketing=$(grep -E '"MARKETING_VERSION":' Project.swift | sed -E 's/.*"([0-9]+\.[0-9]+\.[0-9]+)".*/\1/')
-current_build=$(grep -E '"CURRENT_PROJECT_VERSION":' Project.swift | sed -E 's/.*"([0-9]+)".*/\1/')
+# ---------- Read current versions from project.yml ----------
+current_marketing=$(grep -E 'MARKETING_VERSION:' project.yml | head -1 | sed -E 's/.*MARKETING_VERSION: "?([0-9]+\.[0-9]+\.[0-9]+)"?.*/\1/')
+current_build=$(grep -E 'CURRENT_PROJECT_VERSION:' project.yml | head -1 | sed -E 's/.*CURRENT_PROJECT_VERSION: "?([0-9]+)"?.*/\1/')
 
 if [[ -z "$current_marketing" || -z "$current_build" ]]; then
-    echo "Could not read MARKETING_VERSION / CURRENT_PROJECT_VERSION from Project.swift"
+    echo "Could not read MARKETING_VERSION / CURRENT_PROJECT_VERSION from project.yml"
     exit 1
 fi
 
@@ -109,13 +109,18 @@ $macos_enabled && echo "  - macOS .pkg -> App Store Connect"
 $dry_run && echo "  (dry run -- no upload, no commit)"
 echo ""
 
-# ---------- Rewrite Project.swift ----------
-sed -i '' "s/\"MARKETING_VERSION\": \"$current_marketing\"/\"MARKETING_VERSION\": \"$new_marketing\"/" Project.swift
-sed -i '' "s/\"CURRENT_PROJECT_VERSION\": \"$current_build\"/\"CURRENT_PROJECT_VERSION\": \"$new_build\"/" Project.swift
+# ---------- Rewrite project.yml ----------
+sed -i '' "s/MARKETING_VERSION: \"$current_marketing\"/MARKETING_VERSION: \"$new_marketing\"/" project.yml
+sed -i '' "s/CURRENT_PROJECT_VERSION: \"$current_build\"/CURRENT_PROJECT_VERSION: \"$new_build\"/" project.yml
 
 # ---------- Regenerate project ----------
-echo "==> tuist generate"
-tuist generate -n
+if ! command -v xcodegen >/dev/null 2>&1; then
+    echo "Missing xcodegen. Install it with: brew install xcodegen"
+    exit 1
+fi
+
+echo "==> xcodegen generate"
+xcodegen generate
 
 # ---------- Helper: archive + export + upload ----------
 archive_and_upload() {
@@ -148,7 +153,7 @@ archive_and_upload() {
     echo ""
     echo "==> Archiving $platform"
     xcodebuild \
-        -workspace Sotto.xcworkspace \
+        -project Sotto.xcodeproj \
         -scheme Sotto \
         -configuration Release \
         -destination "$dest_arg" \
@@ -189,7 +194,7 @@ fi
 if $auto_commit; then
     echo ""
     echo "==> Committing version bump"
-    git add Project.swift
+    git add project.yml
     git commit -m "chore(release): v$new_marketing (build $new_build)"
     git tag "v$new_marketing"
     echo ""

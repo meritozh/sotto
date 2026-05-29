@@ -1,12 +1,14 @@
 import SwiftUI
 
-struct ContentView: View {
+public struct ContentView: View {
 
     @State private var selectedDestination: SidebarDestination = .dashboard
     @State private var lastContentDestination: SidebarDestination = .dashboard
     @State private var showAddSubscriptionSheet = false
 
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
         tabs
         .sheet(isPresented: $showAddSubscriptionSheet) {
             AddSubscriptionSheet()

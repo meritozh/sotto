@@ -1,13 +1,9 @@
 import Foundation
 import Testing
-@testable import Sotto
+@testable import SottoKit
 
 @Suite("Sotto Tests")
 struct SottoTests {
-    @Test func placeholder() {
-        #expect(true)
-    }
-
     @Test func renewalTimelineGroupsActiveSubscriptionsByUpcomingDueDate() {
         let calendar = Calendar(identifier: .gregorian)
         let today = calendar.date(from: DateComponents(year: 2026, month: 5, day: 29))!

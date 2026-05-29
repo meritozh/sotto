@@ -2,14 +2,14 @@
 *.xcodeproj
 xcuserdata/
 build/
+.build/
 DerivedData/
 .deriveddata/
 
-# Tuist
+# Generated project files
 *.xcworkspace
 !*.xcworkspace/xcshareddata
-.tuist-bin/
-.tuist-version
+Generated/
 Derived/
 
 # Release
