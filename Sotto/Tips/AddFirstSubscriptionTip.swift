@@ -5,8 +5,6 @@ struct AddFirstSubscriptionTip: Tip {
     @Parameter
     static var subscriptionCount: Int = 0
 
-    static let addActionID = "add"
-
     var title: Text {
         Text("Add Your First Subscription")
     }
@@ -17,12 +15,6 @@ struct AddFirstSubscriptionTip: Tip {
 
     var image: Image? {
         Image(systemName: "plus.circle.fill")
-    }
-
-    var actions: [Action] {
-        // TipKit Action.title is a StringProtocol, not auto-localized like SwiftUI Text;
-        // resolve through the catalog explicitly so it picks up the current language.
-        Action(id: Self.addActionID, title: String(localized: "Add Subscription"))
     }
 
     var rules: [Rule] {

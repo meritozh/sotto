@@ -10,11 +10,12 @@ struct CardModifier: ViewModifier {
             .padding(.vertical, paddingV)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: DesignTokens.cardCornerRadius)
+                RoundedRectangle(cornerRadius: DesignTokens.cardCornerRadius, style: .continuous)
                     .fill(DesignTokens.cardSurface)
             )
+            .glassEffect(.regular, in: .rect(cornerRadius: DesignTokens.cardCornerRadius))
             .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.cardCornerRadius)
+                RoundedRectangle(cornerRadius: DesignTokens.cardCornerRadius, style: .continuous)
                     .strokeBorder(DesignTokens.cardBorder, lineWidth: 0.5)
             )
             .shadow(
@@ -28,6 +29,24 @@ struct CardModifier: ViewModifier {
 extension View {
     func cardStyle(paddingH: CGFloat = 18, paddingV: CGFloat = 16) -> some View {
         modifier(CardModifier(paddingH: paddingH, paddingV: paddingV))
+    }
+
+    @ViewBuilder
+    func glassActionButtonStyle(prominent: Bool = false) -> some View {
+        if prominent {
+            self.buttonStyle(.glassProminent)
+        } else {
+            self.buttonStyle(.glass)
+        }
+    }
+
+    @ViewBuilder
+    func floatingTabBarContentClearance() -> some View {
+        #if os(iOS)
+        self.contentMargins(.bottom, 24, for: .scrollContent)
+        #else
+        self
+        #endif
     }
 
     func cardSectionHeader() -> some View {

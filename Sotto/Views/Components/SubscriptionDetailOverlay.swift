@@ -33,9 +33,10 @@ struct SubscriptionDetailOverlay: View {
                         }
                     })
                     .frame(width: panelWidth)
-                    .background(.regularMaterial)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .shadow(color: .black.opacity(0.2), radius: 8, x: -2)
+                    .background(DesignTokens.cardSurface)
+                    .glassEffect(.regular, in: .rect(cornerRadius: DesignTokens.radiusLG))
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusLG, style: .continuous))
+                    .shadow(color: .black.opacity(0.12), radius: 6, x: -1)
                     .padding(.vertical, panelPadding)
                     .padding(.trailing, panelPadding)
                     .transition(.move(edge: .trailing))

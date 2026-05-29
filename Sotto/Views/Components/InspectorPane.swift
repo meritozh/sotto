@@ -121,6 +121,7 @@ struct InspectorPane: View {
                                 Label("Pause", systemImage: "pause.circle")
                                     .frame(maxWidth: .infinity)
                             }
+                            .glassActionButtonStyle()
                         }
                         if subscription.status == .paused {
                             Button {
@@ -130,6 +131,7 @@ struct InspectorPane: View {
                                 Label("Resume", systemImage: "play.circle")
                                     .frame(maxWidth: .infinity)
                             }
+                            .glassActionButtonStyle(prominent: true)
                         }
                         Button {
                             showEditSheet = true
@@ -137,6 +139,7 @@ struct InspectorPane: View {
                             Label("Edit", systemImage: "pencil")
                                 .frame(maxWidth: .infinity)
                         }
+                        .glassActionButtonStyle()
                     }
 
                     if subscription.status != .cancelled {
@@ -147,6 +150,7 @@ struct InspectorPane: View {
                             Label("Cancel Subscription", systemImage: "xmark.circle")
                                 .frame(maxWidth: .infinity)
                         }
+                        .glassActionButtonStyle()
                     }
 
                     if onDelete != nil {
@@ -156,6 +160,7 @@ struct InspectorPane: View {
                             Label("Delete…", systemImage: "trash")
                                 .frame(maxWidth: .infinity)
                         }
+                        .glassActionButtonStyle()
                     }
                 }
             }

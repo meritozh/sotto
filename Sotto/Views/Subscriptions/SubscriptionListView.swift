@@ -73,6 +73,15 @@ struct SubscriptionListView: View {
     // MARK: - Private Views
 
     private var listContent: some View {
+        subscriptionList
+        .background(DesignTokens.windowBackground)
+        .floatingTabBarContentClearance()
+        .searchable(text: $searchText, prompt: "Search subscriptions")
+        .toolbar { toolbarContent }
+        .navigationTitle("All Subscriptions")
+    }
+
+    private var subscriptionList: some View {
         ScrollView {
             LazyVStack(spacing: 0, pinnedViews: isCompact ? [] : [.sectionHeaders]) {
                 Section {
@@ -96,6 +105,19 @@ struct SubscriptionListView: View {
                             .contextMenu {
                                 subscriptionContextMenuItems(for: subscription)
                             }
+                            #if os(iOS)
+                            .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                statusSwipeAction(for: subscription)
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                cancelSwipeAction(for: subscription)
+                                Button(role: .destructive) {
+                                    deleteSubscription(subscription)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                            #endif
 
                             Rectangle()
                                 .fill(DesignTokens.contentDivider)
@@ -109,25 +131,36 @@ struct SubscriptionListView: View {
                 }
             }
         }
-        .background(DesignTokens.windowBackground)
-        #if os(iOS)
-        .safeAreaPadding(.bottom, 64)
-        #endif
-        .searchable(text: $searchText, prompt: "Search subscriptions")
-        .toolbar { toolbarContent }
-        .navigationTitle("All Subscriptions")
     }
 
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
-        #if os(iOS)
-        ToolbarItem(placement: .primaryAction) {
+        #if os(macOS)
+        ToolbarItem {
             Button {
                 showAddSheet = true
             } label: {
                 Label("Add Subscription", systemImage: "plus")
             }
         }
+        ToolbarSpacer(.fixed)
+        ToolbarItem {
+            Picker("Status", selection: $statusFilter) {
+                Text("All").tag(nil as SubscriptionStatus?)
+                ForEach(SubscriptionStatus.allCases, id: \.self) { status in
+                    Text(status.displayName).tag(status as SubscriptionStatus?)
+                }
+            }
+        }
+        ToolbarItem {
+            Picker("Category", selection: $categoryFilter) {
+                Text("All Categories").tag(nil as Category?)
+                ForEach(categories) { category in
+                    Text(category.name).tag(category as Category?)
+                }
+            }
+        }
+        #else
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
                 Picker("Status", selection: $statusFilter) {
@@ -146,36 +179,26 @@ struct SubscriptionListView: View {
                 Label("Filters", systemImage: "line.3.horizontal.decrease.circle")
             }
         }
-        #else
-        ToolbarItem {
-            Button {
-                showAddSheet = true
-            } label: {
-                Label("Add Subscription", systemImage: "plus")
-            }
-        }
-        ToolbarItem {
-            Picker("Status", selection: $statusFilter) {
-                Text("All").tag(nil as SubscriptionStatus?)
-                ForEach(SubscriptionStatus.allCases, id: \.self) { status in
-                    Text(status.displayName).tag(status as SubscriptionStatus?)
-                }
-            }
-        }
-        ToolbarItem {
-            Picker("Category", selection: $categoryFilter) {
-                Text("All Categories").tag(nil as Category?)
-                ForEach(categories) { category in
-                    Text(category.name).tag(category as Category?)
-                }
-            }
-        }
         #endif
     }
 
+    @ViewBuilder
     private var emptyState: some View {
         let hasFilter = !searchText.isEmpty || statusFilter != .active || categoryFilter != nil
-        return ContentUnavailableView {
+
+        #if os(iOS)
+        ContentUnavailableView {
+            Label(hasFilter ? "No matches" : "No subscriptions yet",
+                  systemImage: hasFilter ? "magnifyingglass" : "list.bullet.rectangle")
+        } description: {
+            Text(hasFilter
+                 ? "Try clearing filters or searching for a different name."
+                 : "Create your first subscription to start tracking renewal spend.")
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 40)
+        #else
+        ContentUnavailableView {
             Label(hasFilter ? "No matches" : "No subscriptions yet",
                   systemImage: hasFilter ? "magnifyingglass" : "list.bullet.rectangle")
         } description: {
@@ -189,11 +212,12 @@ struct SubscriptionListView: View {
                 } label: {
                     Label("Add Subscription", systemImage: "plus")
                 }
-                .buttonStyle(.borderedProminent)
+                .glassActionButtonStyle(prominent: true)
             }
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 40)
+        #endif
     }
 
     // MARK: - Column Header
@@ -227,19 +251,83 @@ struct SubscriptionListView: View {
     @ViewBuilder
     private func subscriptionContextMenuItems(for subscription: Subscription) -> some View {
         if subscription.status == .active {
-            Button("Pause") { subscription.status = .paused; subscription.updatedAt = Date() }
+            Button {
+                pause(subscription)
+            } label: {
+                Label("Pause", systemImage: "pause.circle")
+            }
         }
         if subscription.status == .paused {
-            Button("Resume") { subscription.status = .active; subscription.updatedAt = Date() }
+            Button {
+                resume(subscription)
+            } label: {
+                Label("Resume", systemImage: "play.circle")
+            }
         }
         if subscription.status != .cancelled {
-            Button("Cancel Subscription") { subscription.status = .cancelled; subscription.updatedAt = Date() }
+            Button {
+                cancel(subscription)
+            } label: {
+                Label("Cancel Subscription", systemImage: "xmark.circle")
+            }
         }
         Divider()
-        Button("Delete", role: .destructive) { deleteSubscription(subscription) }
+        Button(role: .destructive) {
+            deleteSubscription(subscription)
+        } label: {
+            Label("Delete", systemImage: "trash")
+        }
     }
 
     // MARK: - Helpers
+
+    #if os(iOS)
+    @ViewBuilder
+    private func statusSwipeAction(for subscription: Subscription) -> some View {
+        if subscription.status == .active {
+            Button {
+                pause(subscription)
+            } label: {
+                Label("Pause", systemImage: "pause.circle")
+            }
+            .tint(.orange)
+        } else if subscription.status == .paused {
+            Button {
+                resume(subscription)
+            } label: {
+                Label("Resume", systemImage: "play.circle")
+            }
+            .tint(.green)
+        }
+    }
+
+    @ViewBuilder
+    private func cancelSwipeAction(for subscription: Subscription) -> some View {
+        if subscription.status != .cancelled {
+            Button {
+                cancel(subscription)
+            } label: {
+                Label("Cancel", systemImage: "xmark.circle")
+            }
+            .tint(.orange)
+        }
+    }
+    #endif
+
+    private func pause(_ subscription: Subscription) {
+        subscription.status = .paused
+        subscription.updatedAt = Date()
+    }
+
+    private func resume(_ subscription: Subscription) {
+        subscription.status = .active
+        subscription.updatedAt = Date()
+    }
+
+    private func cancel(_ subscription: Subscription) {
+        subscription.status = .cancelled
+        subscription.updatedAt = Date()
+    }
 
     private func deleteSubscription(_ subscription: Subscription) {
         if selectedSubscription?.id == subscription.id {
@@ -255,4 +343,3 @@ struct SubscriptionListView: View {
     }
     .modelContainer(makePreviewContainer())
 }
-

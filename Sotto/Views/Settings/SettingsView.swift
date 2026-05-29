@@ -95,8 +95,10 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                     .contextMenu {
-                        Button("Delete", role: .destructive) {
+                        Button(role: .destructive) {
                             modelContext.delete(method)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
                         }
                     }
                 }
@@ -144,11 +146,7 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .scrollContentBackground(.hidden)
         .background(DesignTokens.windowBackground)
-        #if os(iOS)
-        // iOS 26 floating tab bar overlays the bottom of the form, so push content up
-        // far enough that the last row clears the pill instead of hiding behind it.
-        .safeAreaPadding(.bottom, 64)
-        #endif
+        .floatingTabBarContentClearance()
         .navigationTitle("Settings")
         .sheet(isPresented: $showAddPaymentMethod) {
             PaymentMethodForm(isPresented: $showAddPaymentMethod) { method in

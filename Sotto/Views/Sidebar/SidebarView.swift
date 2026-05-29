@@ -40,7 +40,7 @@ struct SidebarView: View {
 
     var body: some View {
         List(selection: $selection) {
-            ForEach(SidebarDestination.allCases, id: \.self) { dest in
+            ForEach(SidebarDestination.allCases.filter { $0 != .addSubscription }, id: \.self) { dest in
                 Label(dest.label, systemImage: dest.icon)
                     .badge(badge(for: dest))
             }

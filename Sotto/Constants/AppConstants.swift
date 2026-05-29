@@ -19,32 +19,41 @@ enum DesignTokens {
     static let cardCornerRadius: CGFloat = 12
 
     // MARK: - Card shadow
-    static let cardShadowRadius: CGFloat = 2
+    static let cardShadowRadius: CGFloat = 1
     static let cardShadowOffsetY: CGFloat = 1
-    static let cardShadowOpacity: Double = 0.05
+    static let cardShadowOpacity: Double = 0.025
 
-    // MARK: - Surfaces (warm ivory)
-    static let windowBackground = Color(light: Color(hex: "#fbfaf6"), dark: Color(hex: "#1f1d18"))
-    static let sidebarTint = Color(light: Color(hex: "#f5f0e4").opacity(0.55), dark: Color(hex: "#28241c").opacity(0.6))
-    static let contentDivider = Color(light: Color.black.opacity(0.07), dark: Color.white.opacity(0.07))
-    static let cardSurface = Color(light: Color(hex: "#fbfaf6"), dark: Color.white.opacity(0.025))
-    static let cardBorder = Color(light: Color.black.opacity(0.07), dark: Color.white.opacity(0.07))
-    static let kpiSurface = Color(light: Color.black.opacity(0.025), dark: Color.white.opacity(0.04))
+    // MARK: - Surfaces
+    #if os(macOS)
+    static let windowBackground = Color(nsColor: .windowBackgroundColor)
+    static let sidebarTint = Color(nsColor: .underPageBackgroundColor).opacity(0.65)
+    static let contentDivider = Color(nsColor: .separatorColor).opacity(0.45)
+    static let cardSurface = Color(nsColor: .controlBackgroundColor).opacity(0.46)
+    static let cardBorder = Color(nsColor: .separatorColor).opacity(0.36)
+    static let kpiSurface = Color.primary.opacity(0.045)
+    #else
+    static let windowBackground = Color(uiColor: .systemGroupedBackground)
+    static let sidebarTint = Color(uiColor: .systemBackground).opacity(0.65)
+    static let contentDivider = Color(uiColor: .separator).opacity(0.5)
+    static let cardSurface = Color(uiColor: .secondarySystemGroupedBackground).opacity(0.42)
+    static let cardBorder = Color(uiColor: .separator).opacity(0.4)
+    static let kpiSurface = Color.primary.opacity(0.045)
+    #endif
 
     // MARK: - Foreground (label hierarchy)
-    static let label  = Color(light: Color.black.opacity(0.88), dark: Color.white.opacity(0.92))
-    static let label2 = Color(light: Color.black.opacity(0.56), dark: Color.white.opacity(0.56))
-    static let label3 = Color(light: Color.black.opacity(0.42), dark: Color.white.opacity(0.38))
-    static let label4 = Color(light: Color.black.opacity(0.28), dark: Color.white.opacity(0.22))
+    static let label = Color.primary
+    static let label2 = Color.secondary
+    static let label3 = Color.secondary.opacity(0.78)
+    static let label4 = Color.secondary.opacity(0.52)
 
     // MARK: - Selection
-    static let rowHover    = Color(light: Color.black.opacity(0.035), dark: Color.white.opacity(0.04))
-    static let rowSelected = Color(light: Color.black.opacity(0.07),  dark: Color.white.opacity(0.08))
-    static let accentTint  = Color.accentColor.opacity(0.12)
+    static let rowHover = Color.primary.opacity(0.045)
+    static let rowSelected = Color.accentColor.opacity(0.14)
+    static let accentTint = Color.accentColor.opacity(0.14)
 
     // MARK: - Semantic colors
-    static let dueSoon = Color(light: Color(hex: "#c44d3c"), dark: Color(hex: "#ff7b6b"))
-    static let dueSoonBg = Color(light: Color(hex: "#c44d3c").opacity(0.14), dark: Color(hex: "#ff7b6b").opacity(0.18))
+    static let dueSoon = Color.orange
+    static let dueSoonBg = Color.orange.opacity(0.16)
 
     // MARK: - Category palette (macOS-style muted)
     static let categoryPalette: [String] = [

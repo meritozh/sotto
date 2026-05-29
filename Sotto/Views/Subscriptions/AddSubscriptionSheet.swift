@@ -33,87 +33,23 @@ struct AddSubscriptionSheet: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Button("Cancel") { dismiss() }
-                    .keyboardShortcut(.cancelAction)
-                Spacer()
-                Text(existingSubscription == nil ? "New Subscription" : "Edit Subscription")
-                    .font(.headline)
-                Spacer()
-                Button("Save") { save() }
-                    .keyboardShortcut(.defaultAction)
-                    .disabled(!isValid)
-            }
-            .padding()
-
-            Divider()
-
-            Form {
-                Section("Details") {
-                    HStack {
-                        Button {
-                            showIconPicker = true
-                        } label: {
-                            Image(systemName: icon)
-                                .font(.title)
-                                .frame(width: 44, height: 44)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(.quaternary))
-                        }
-                        .buttonStyle(.plain)
-                        .popover(isPresented: $showIconPicker) {
-                            IconPicker(selectedIcon: $icon)
-                        }
-
-                        TextField("Subscription Name", text: $name)
-                            #if os(macOS)
-                            .textFieldStyle(.roundedBorder)
-                            #endif
+        NavigationStack {
+            formContent
+                .navigationTitle(existingSubscription == nil ? "New Subscription" : "Edit Subscription")
+                #if os(iOS)
+                .navigationBarTitleDisplayMode(.inline)
+                #endif
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") { dismiss() }
+                            .keyboardShortcut(.cancelAction)
                     }
-
-                    HStack {
-                        TextField("Amount", text: $amount)
-                            #if os(macOS)
-                            .textFieldStyle(.roundedBorder)
-                            .frame(width: 120)
-                            #else
-                            .keyboardType(.decimalPad)
-                            #endif
-                        CurrencyPicker(selectedCurrency: $currencyCode)
-                    }
-
-                    Picker("Billing Cycle", selection: $billingCycle) {
-                        ForEach(BillingCycle.allCases, id: \.self) { cycle in
-                            Text(cycle.displayName).tag(cycle)
-                        }
-                    }
-
-                    DatePicker("Start Date", selection: $startDate, displayedComponents: .date)
-                }
-
-                Section("Organization") {
-                    Picker("Category", selection: $selectedCategory) {
-                        Text("None").tag(nil as Category?)
-                        ForEach(categories) { category in
-                            Label(category.name, systemImage: category.icon)
-                                .tag(category as Category?)
-                        }
-                    }
-
-                    Picker("Payment Method", selection: $selectedPaymentMethod) {
-                        Text("None").tag(nil as PaymentMethod?)
-                        ForEach(paymentMethods) { method in
-                            Text(method.name).tag(method as PaymentMethod?)
-                        }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save") { save() }
+                            .keyboardShortcut(.defaultAction)
+                            .disabled(!isValid)
                     }
                 }
-
-                Section("Notes") {
-                    TextEditor(text: $notes)
-                        .frame(height: 60)
-                }
-            }
-            .formStyle(.grouped)
         }
         #if os(macOS)
         .frame(width: 480, height: 520)
@@ -122,6 +58,82 @@ struct AddSubscriptionSheet: View {
     }
 
     // MARK: - Helpers
+
+    private var formContent: some View {
+        Form {
+            Section("Details") {
+                HStack {
+                    Button {
+                        showIconPicker = true
+                    } label: {
+                        Image(systemName: icon)
+                            .font(.title)
+                            .frame(width: 44, height: 44)
+                    }
+                    .glassActionButtonStyle()
+                    .popover(isPresented: $showIconPicker) {
+                        IconPicker(selectedIcon: $icon)
+                    }
+
+                    TextField("Subscription Name", text: $name)
+                        #if os(macOS)
+                        .textFieldStyle(.roundedBorder)
+                        #endif
+                }
+
+                #if os(macOS)
+                HStack {
+                    amountField
+                        .frame(width: 120)
+                    CurrencyPicker(selectedCurrency: $currencyCode)
+                }
+                #else
+                amountField
+                CurrencyPicker(selectedCurrency: $currencyCode)
+                #endif
+
+                Picker("Billing Cycle", selection: $billingCycle) {
+                    ForEach(BillingCycle.allCases, id: \.self) { cycle in
+                        Text(cycle.displayName).tag(cycle)
+                    }
+                }
+
+                DatePicker("Start Date", selection: $startDate, displayedComponents: .date)
+            }
+
+            Section("Organization") {
+                Picker("Category", selection: $selectedCategory) {
+                    Text("None").tag(nil as Category?)
+                    ForEach(categories) { category in
+                        Label(category.name, systemImage: category.icon)
+                            .tag(category as Category?)
+                    }
+                }
+
+                Picker("Payment Method", selection: $selectedPaymentMethod) {
+                    Text("None").tag(nil as PaymentMethod?)
+                    ForEach(paymentMethods) { method in
+                        Text(method.name).tag(method as PaymentMethod?)
+                    }
+                }
+            }
+
+            Section("Notes") {
+                TextEditor(text: $notes)
+                    .frame(height: 60)
+            }
+        }
+        .formStyle(.grouped)
+    }
+
+    private var amountField: some View {
+        TextField("Amount", text: $amount)
+            #if os(macOS)
+            .textFieldStyle(.roundedBorder)
+            #else
+            .keyboardType(.decimalPad)
+            #endif
+    }
 
     private func populateForEdit() {
         guard let sub = existingSubscription else { return }

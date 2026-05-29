@@ -6,8 +6,6 @@ struct DashboardView: View {
 
     // MARK: - Properties
 
-    var onAddSubscription: () -> Void = {}
-
     @Query private var allSubscriptions: [Subscription]
     @Query private var exchangeRates: [ExchangeRate]
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
@@ -39,32 +37,30 @@ struct DashboardView: View {
     // MARK: - Body
 
     var body: some View {
-        ScrollView {
-            TipView(addFirstSubscriptionTip) { action in
-                if action.id == AddFirstSubscriptionTip.addActionID {
-                    onAddSubscription()
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top, 8)
-
-            MasonryLayout(columns: isCompact ? 1 : 2, spacing: 16) {
-                SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
-                CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
-                UpcomingRenewalsCard(activeSubscriptions: activeSubscriptions)
-            }
-            .padding()
-        }
-        .navigationTitle("Dashboard")
+        dashboardContent
         .background(DesignTokens.windowBackground)
-        #if os(iOS)
-        .safeAreaPadding(.bottom, 64)
-        #endif
+        .floatingTabBarContentClearance()
+        .navigationTitle("Dashboard")
         .task {
             AddFirstSubscriptionTip.subscriptionCount = allSubscriptions.count
         }
         .onChange(of: allSubscriptions.count) { _, newValue in
             AddFirstSubscriptionTip.subscriptionCount = newValue
+        }
+    }
+
+    private var dashboardContent: some View {
+        ScrollView {
+            TipView(addFirstSubscriptionTip)
+            .padding(.horizontal)
+            .padding(.top, isCompact ? 0 : 8)
+
+            MasonryLayout(columns: isCompact ? 1 : 2, spacing: 16) {
+                SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
+                CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
+                RenewalTimelineCard(activeSubscriptions: activeSubscriptions)
+            }
+            .padding()
         }
     }
 }

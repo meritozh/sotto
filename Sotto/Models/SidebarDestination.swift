@@ -3,7 +3,7 @@ import Foundation
 enum SidebarDestination: String, CaseIterable, Identifiable {
     case dashboard
     case subscriptions
-    case calendar
+    case addSubscription
     case categories
     case settings
 
@@ -14,7 +14,7 @@ enum SidebarDestination: String, CaseIterable, Identifiable {
         switch self {
         case .dashboard: "Dashboard"
         case .subscriptions: "All Subscriptions"
-        case .calendar: "Calendar"
+        case .addSubscription: "Add Subscription"
         case .categories: "Categories"
         case .settings: "Settings"
         }
@@ -24,7 +24,7 @@ enum SidebarDestination: String, CaseIterable, Identifiable {
         switch self {
         case .dashboard: "square.grid.2x2"
         case .subscriptions: "list.bullet"
-        case .calendar: "calendar"
+        case .addSubscription: "plus"
         case .categories: "tag"
         case .settings: "gearshape"
         }

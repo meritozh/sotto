@@ -7,21 +7,29 @@ extension Subscription {
     /// is preserved for SwiftData/CloudKit schema compatibility and as a sortable
     /// fallback, but UI code should display this computed value.
     var currentDueDate: Date {
-        let today = Calendar.current.startOfDay(for: Date())
-        var date = startDate
+        currentDueDate(asOf: Date())
+    }
+
+    func currentDueDate(asOf referenceDate: Date, calendar: Calendar = .current) -> Date {
+        let today = calendar.startOfDay(for: referenceDate)
+        var date = calendar.startOfDay(for: startDate)
         // Future-dated subscription (start hasn't arrived): the start IS the next due.
         if date >= today { return date }
         while date < today {
-            date = BillingCycleCalculator.nextDueDate(from: date, cycle: billingCycle)
+            date = calendar.startOfDay(for: BillingCycleCalculator.nextDueDate(from: date, cycle: billingCycle))
         }
         return date
     }
 
     var daysUntilDue: Int {
-        Calendar.current.dateComponents(
+        daysUntilDue(asOf: Date())
+    }
+
+    func daysUntilDue(asOf referenceDate: Date, calendar: Calendar = .current) -> Int {
+        calendar.dateComponents(
             [.day],
-            from: Calendar.current.startOfDay(for: Date()),
-            to: Calendar.current.startOfDay(for: currentDueDate)
+            from: calendar.startOfDay(for: referenceDate),
+            to: calendar.startOfDay(for: currentDueDate(asOf: referenceDate, calendar: calendar))
         ).day ?? 0
     }
 

@@ -14,37 +14,47 @@ struct PaymentMethodForm: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 16) {
-            Text("New Payment Method")
-                .font(.headline)
-
-            Form {
-                TextField("Name (e.g. Chase Visa)", text: $name)
-                Picker("Type", selection: $type) {
-                    ForEach(PaymentMethodType.allCases, id: \.self) { methodType in
-                        Text(methodType.displayName).tag(methodType)
+        NavigationStack {
+            formContent
+                .navigationTitle("New Payment Method")
+                #if os(iOS)
+                .navigationBarTitleDisplayMode(.inline)
+                #endif
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            isPresented = false
+                        }
+                        .keyboardShortcut(.cancelAction)
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Add", action: save)
+                            .keyboardShortcut(.defaultAction)
+                            .disabled(name.isEmpty)
                     }
                 }
-            }
-            .formStyle(.grouped)
-
-            HStack {
-                Button("Cancel") {
-                    isPresented = false
-                }
-                .keyboardShortcut(.cancelAction)
-                Spacer()
-                Button("Add") {
-                    let method = PaymentMethod(name: name, type: type)
-                    onSave(method)
-                    isPresented = false
-                }
-                .keyboardShortcut(.defaultAction)
-                .disabled(name.isEmpty)
-            }
-            .padding()
         }
+        #if os(macOS)
         .frame(width: 360, height: 240)
+        #endif
+    }
+
+    private var formContent: some View {
+        Form {
+            TextField("Name (e.g. Chase Visa)", text: $name)
+            Picker("Type", selection: $type) {
+                ForEach(PaymentMethodType.allCases, id: \.self) { methodType in
+                    Text(methodType.displayName).tag(methodType)
+                }
+            }
+        }
+        .formStyle(.grouped)
+    }
+
+    private func save() {
+        let method = PaymentMethod(name: name, type: type)
+        onSave(method)
+        isPresented = false
     }
 }
 
