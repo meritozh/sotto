@@ -19,6 +19,8 @@ struct ExportPayload: Codable {
 struct CategoryDTO: Codable {
     let id: UUID
     let name: String
+    let nameEnglish: String?
+    let nameChineseSimplified: String?
     let colorHex: String
     let icon: String
 }
@@ -96,7 +98,16 @@ enum DataExportService {
             return ExportPayload(
                 version: ExportPayload.currentVersion,
                 exportedAt: .now,
-                categories: cats.map { CategoryDTO(id: $0.id, name: $0.name, colorHex: $0.colorHex, icon: $0.icon) },
+                categories: cats.map {
+                    CategoryDTO(
+                        id: $0.id,
+                        name: $0.name,
+                        nameEnglish: $0.nameEnglish,
+                        nameChineseSimplified: $0.nameChineseSimplified,
+                        colorHex: $0.colorHex,
+                        icon: $0.icon
+                    )
+                },
                 paymentMethods: pms.map { PaymentMethodDTO(id: $0.id, name: $0.name, type: $0.type.rawValue) },
                 subscriptions: subs.map { sub in
                     SubscriptionDTO(
@@ -180,7 +191,13 @@ enum DataExportService {
 
         for dto in payload.categories {
             if mode == .merge, catByID[dto.id] != nil { continue }
-            let model = Category(name: dto.name, colorHex: dto.colorHex, icon: dto.icon)
+            let model = Category(
+                name: dto.name,
+                colorHex: dto.colorHex,
+                icon: dto.icon,
+                nameEnglish: dto.nameEnglish ?? "",
+                nameChineseSimplified: dto.nameChineseSimplified ?? ""
+            )
             model.id = dto.id
             context.insert(model)
             catByID[dto.id] = model

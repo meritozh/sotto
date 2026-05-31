@@ -18,6 +18,7 @@ struct SubscriptionListView: View {
     @State private var categoryFilter: Category?
 
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.locale) private var locale
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
@@ -156,7 +157,7 @@ struct SubscriptionListView: View {
             Picker("Category", selection: $categoryFilter) {
                 Text("All Categories").tag(nil as Category?)
                 ForEach(categories) { category in
-                    Text(category.name).tag(category as Category?)
+                    Text(category.localizedName(for: locale)).tag(category as Category?)
                 }
             }
         }
@@ -172,7 +173,7 @@ struct SubscriptionListView: View {
                 Picker("Category", selection: $categoryFilter) {
                     Text("All Categories").tag(nil as Category?)
                     ForEach(categories) { category in
-                        Text(category.name).tag(category as Category?)
+                        Text(category.localizedName(for: locale)).tag(category as Category?)
                     }
                 }
             } label: {

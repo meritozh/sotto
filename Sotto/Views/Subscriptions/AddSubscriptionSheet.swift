@@ -8,6 +8,7 @@ struct AddSubscriptionSheet: View {
 
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.locale) private var locale
     @Query private var categories: [Category]
     @Query private var paymentMethods: [PaymentMethod]
 
@@ -71,9 +72,11 @@ struct AddSubscriptionSheet: View {
                             .frame(width: 44, height: 44)
                     }
                     .glassActionButtonStyle()
+                    #if os(macOS)
                     .popover(isPresented: $showIconPicker) {
                         IconPicker(selectedIcon: $icon)
                     }
+                    #endif
 
                     TextField("Subscription Name", text: $name)
                         #if os(macOS)
@@ -105,7 +108,11 @@ struct AddSubscriptionSheet: View {
                 Picker("Category", selection: $selectedCategory) {
                     Text("None").tag(nil as Category?)
                     ForEach(categories) { category in
-                        Label(category.name, systemImage: category.icon)
+                        Label {
+                            Text(category.localizedName(for: locale))
+                        } icon: {
+                            Image(systemName: category.icon)
+                        }
                             .tag(category as Category?)
                     }
                 }
@@ -124,6 +131,11 @@ struct AddSubscriptionSheet: View {
             }
         }
         .formStyle(.grouped)
+        #if os(iOS)
+        .sheet(isPresented: $showIconPicker) {
+            IconPicker(selectedIcon: $icon)
+        }
+        #endif
     }
 
     private var amountField: some View {

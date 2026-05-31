@@ -81,7 +81,7 @@ struct SpendingCard: View {
 
     // MARK: - Subviews
 
-    private func kpi(label: LocalizedStringResource, value: String, suffix: String?) -> some View {
+    private func kpi(label: LocalizedStringResource, value: String, suffix: LocalizedStringResource?) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label)
                 .font(.system(size: 11, weight: .medium))

@@ -8,6 +8,7 @@ struct CategoryChart: View {
     let activeSubscriptions: [Subscription]
     let exchangeRate: ExchangeRate?
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
+    @Environment(\.locale) private var locale
 
     // MARK: - Types
 
@@ -21,24 +22,29 @@ struct CategoryChart: View {
     // MARK: - Computed Properties
 
     private var slices: [Slice] {
-        var map: [String: (colorHex: String, amount: Decimal)] = [:]
+        var map: [String: (name: String, colorHex: String, amount: Decimal)] = [:]
         for sub in activeSubscriptions {
-            let catName = sub.category?.name ?? "Uncategorized"
+            let catID = sub.category?.name ?? "Uncategorized"
+            let catName = sub.category?.localizedName(for: locale) ?? uncategorizedName
             let catColor = sub.category?.colorHex ?? "#8a8f99"
             var monthly = BillingCycleCalculator.monthlyEquivalent(amount: sub.amount, cycle: sub.billingCycle)
             if let rate = exchangeRate {
                 monthly = rate.convertToBase(amount: monthly, from: sub.currencyCode)
             }
-            let existing = map[catName] ?? (colorHex: catColor, amount: 0)
-            map[catName] = (colorHex: catColor, amount: existing.amount + monthly)
+            let existing = map[catID] ?? (name: catName, colorHex: catColor, amount: 0)
+            map[catID] = (name: existing.name, colorHex: catColor, amount: existing.amount + monthly)
         }
         return map
-            .map { Slice(id: $0.key, name: $0.key, color: Color(hex: $0.value.colorHex), amount: $0.value.amount) }
+            .map { Slice(id: $0.key, name: $0.value.name, color: Color(hex: $0.value.colorHex), amount: $0.value.amount) }
             .sorted { $0.amount > $1.amount }
     }
 
     private var total: Decimal {
         slices.reduce(Decimal.zero) { $0 + $1.amount }
+    }
+
+    private var uncategorizedName: String {
+        locale.identifier.lowercased().hasPrefix("zh") ? "未分类" : "Uncategorized"
     }
 
     private var maxAmount: Decimal {

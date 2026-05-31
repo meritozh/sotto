@@ -4,6 +4,29 @@ import Testing
 
 @Suite("Sotto Tests")
 struct SottoTests {
+    @Test func categoryLocalizedNameUsesCurrentLanguageWithFallback() {
+        let category = Category(
+            name: "Productivity",
+            colorHex: "#4ECDC4",
+            icon: "tag",
+            nameEnglish: "Productivity",
+            nameChineseSimplified: "效率"
+        )
+
+        #expect(category.localizedName(for: Locale(identifier: "en")) == "Productivity")
+        #expect(category.localizedName(for: Locale(identifier: "zh-Hans")) == "效率")
+
+        category.nameEnglish = ""
+        #expect(category.localizedName(for: Locale(identifier: "en")) == "效率")
+    }
+
+    @Test func defaultCategoryNamesLocalizeWithoutUserOverrides() {
+        let category = Category(name: "Cloud Storage", colorHex: "#5AC8FA", icon: "cloud")
+
+        #expect(category.localizedName(for: Locale(identifier: "en")) == "Cloud Storage")
+        #expect(category.localizedName(for: Locale(identifier: "zh-Hans")) == "云存储")
+    }
+
     @Test func renewalTimelineGroupsActiveSubscriptionsByUpcomingDueDate() {
         let calendar = Calendar(identifier: .gregorian)
         let today = calendar.date(from: DateComponents(year: 2026, month: 5, day: 29))!

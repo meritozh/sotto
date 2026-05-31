@@ -8,6 +8,7 @@ struct InspectorPane: View {
     @Bindable var subscription: Subscription
     @State private var showEditSheet = false
     @State private var showDeleteAlert = false
+    @Environment(\.locale) private var locale
     var onClose: (() -> Void)?
     /// Invoked after the user confirms deletion in the alert. The parent owns the
     /// model context and selection state, so it must clear the selection before
@@ -47,7 +48,7 @@ struct InspectorPane: View {
                             .font(.title2)
                             .fontWeight(.bold)
                         if let category = subscription.category {
-                            Text(category.name)
+                            Text(category.localizedName(for: locale))
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }

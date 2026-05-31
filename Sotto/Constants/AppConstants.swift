@@ -1,12 +1,13 @@
 import Foundation
 import SwiftUI
 
-enum AppConstants {
+public enum AppConstants {
     static let urgentDaysThreshold = 3
     static let soonDaysThreshold = 14
     static let rateStalenessSeconds: TimeInterval = 86_400
     static let overlayAnimationDuration: TimeInterval = 0.25
     static let currencyStorageKey = "baseCurrency"
+    public static let languageStorageKey = "preferredLanguageCode"
 }
 
 enum DesignTokens {

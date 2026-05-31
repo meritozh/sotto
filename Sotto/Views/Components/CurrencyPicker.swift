@@ -35,7 +35,11 @@ struct CurrencyPicker: View {
     var body: some View {
         Picker("Currency", selection: $selectedCurrency) {
             ForEach(Self.currencies, id: \.code) { currency in
-                Text("\(currency.code) — \(String(localized: currency.name))").tag(currency.code)
+                HStack(spacing: 0) {
+                    Text(verbatim: "\(currency.code) - ")
+                    Text(currency.name)
+                }
+                    .tag(currency.code)
             }
         }
     }

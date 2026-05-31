@@ -7,7 +7,7 @@ struct SettingsView: View {
     // MARK: - Properties
 
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
-    @AppStorage("preferredLanguageCode") private var preferredLanguage = "system"
+    @AppStorage(AppConstants.languageStorageKey) private var preferredLanguage = "system"
     @Query private var exchangeRates: [ExchangeRate]
     @Query private var paymentMethods: [PaymentMethod]
     @Environment(\.modelContext) private var modelContext
@@ -73,10 +73,6 @@ struct SettingsView: View {
                     Text("System Default").tag("system")
                     Text(verbatim: "English").tag("en")
                     Text(verbatim: "简体中文").tag("zh-Hans")
-                }
-                .onChange(of: preferredLanguage) { _, newValue in
-                    applyLanguage(newValue)
-                    alertMessage = String(localized: "Please quit and reopen Sotto for the language change to take effect.")
                 }
             }
 
@@ -147,7 +143,7 @@ struct SettingsView: View {
         .scrollContentBackground(.hidden)
         .background(DesignTokens.windowBackground)
         .floatingTabBarContentClearance()
-        .navigationTitle("Settings")
+        .navigationTitle(settingsNavigationTitle)
         .sheet(isPresented: $showAddPaymentMethod) {
             PaymentMethodForm(isPresented: $showAddPaymentMethod) { method in
                 modelContext.insert(method)
@@ -207,6 +203,22 @@ struct SettingsView: View {
 
     // MARK: - Helpers
 
+    private var settingsNavigationTitle: String {
+        localizedString("Settings")
+    }
+
+    private func localizedString(_ key: String) -> String {
+        guard
+            preferredLanguage != "system",
+            let path = Bundle.main.path(forResource: preferredLanguage, ofType: "lproj"),
+            let bundle = Bundle(path: path)
+        else {
+            return Bundle.main.localizedString(forKey: key, value: key, table: nil)
+        }
+
+        return bundle.localizedString(forKey: key, value: key, table: nil)
+    }
+
     private func iconForType(_ type: PaymentMethodType) -> String {
         switch type {
         case .credit: "creditcard"
@@ -264,15 +276,6 @@ struct SettingsView: View {
         return "Sotto-Backup-\(formatter.string(from: Date()))"
     }
 
-    // Bundle.main resolves localized resources at launch from the AppleLanguages
-    // UserDefaults key, so writing it here takes effect on the next cold start.
-    private func applyLanguage(_ code: String) {
-        if code == "system" {
-            UserDefaults.standard.removeObject(forKey: "AppleLanguages")
-        } else {
-            UserDefaults.standard.set([code], forKey: "AppleLanguages")
-        }
-    }
 }
 
 #Preview {

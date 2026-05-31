@@ -7,12 +7,15 @@ struct CategoriesView: View {
 
     @Query private var categories: [Category]
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
+    @Environment(\.locale) private var locale
     @Environment(\.modelContext) private var modelContext
     @State private var showAddCategory = false
     @State private var editingCategory: Category?
-    @State private var newName = ""
-    @State private var newColorHex = "#4ECDC4"
+    @State private var newEnglishName = ""
+    @State private var newChineseName = ""
+    @State private var newColor = Color(hex: "#4ECDC4")
     @State private var newIcon = "tag"
+    @State private var showIconPicker = false
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -105,7 +108,7 @@ struct CategoriesView: View {
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(.white)
                     )
-                Text(category.name)
+                Text(category.localizedName(for: locale))
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(DesignTokens.label)
                 Spacer()
@@ -136,21 +139,41 @@ struct CategoriesView: View {
 
         return NavigationStack {
             Form {
-                TextField("Name", text: $newName)
-                TextField("Color (hex)", text: $newColorHex)
-                HStack {
-                    Text("Preview:")
-                    Circle().fill(Color(hex: newColorHex)).frame(width: 20, height: 20)
+                TextField("English Name", text: $newEnglishName)
+                TextField("Chinese Name", text: $newChineseName)
+
+                ColorPicker("Color", selection: $newColor, supportsOpacity: false)
+
+                Button {
+                    showIconPicker = true
+                } label: {
+                    HStack(spacing: 10) {
+                        Text("Icon")
+                        Spacer()
+                        Image(systemName: newIcon)
+                            .font(.title3)
+                            .foregroundStyle(Color.accentColor)
+                            .frame(width: 28, height: 28)
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(DesignTokens.label3)
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    .contentShape(Rectangle())
                 }
-                TextField("SF Symbol", text: $newIcon)
-                HStack {
-                    Text("Preview:")
-                    Image(systemName: newIcon)
-                        .font(.title2)
-                }
+                .buttonStyle(.plain)
             }
             .formStyle(.grouped)
-            .navigationTitle(isEditing ? "Edit Category" : "New Category")
+            #if os(iOS)
+            .sheet(isPresented: $showIconPicker) {
+                IconPicker(selectedIcon: $newIcon)
+            }
+            #else
+            .popover(isPresented: $showIconPicker) {
+                IconPicker(selectedIcon: $newIcon)
+            }
+            #endif
+            .navigationTitle(isEditing ? LocalizedStringKey("Edit Category") : LocalizedStringKey("New Category"))
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -163,20 +186,39 @@ struct CategoriesView: View {
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(isEditing ? "Save" : "Add") {
+                    Button {
+                        let englishName = newEnglishName.categoryFormTrimmed
+                        let chineseName = newChineseName.categoryFormTrimmed
+                        let categoryName = Category.canonicalName(
+                            english: englishName,
+                            chineseSimplified: chineseName
+                        )
+                        let savedCategoryName = categoryName.isEmpty ? editing?.name ?? "" : categoryName
+                        let colorHex = newColor.hexRGB ?? "#4ECDC4"
+
                         if let category = editing {
-                            category.name = newName
-                            category.colorHex = newColorHex
+                            category.name = savedCategoryName
+                            category.nameEnglish = englishName
+                            category.nameChineseSimplified = chineseName
+                            category.colorHex = colorHex
                             category.icon = newIcon
                         } else {
-                            let category = Category(name: newName, colorHex: newColorHex, icon: newIcon)
+                            let category = Category(
+                                name: savedCategoryName,
+                                colorHex: colorHex,
+                                icon: newIcon,
+                                nameEnglish: englishName,
+                                nameChineseSimplified: chineseName
+                            )
                             modelContext.insert(category)
                         }
                         showAddCategory = false
                         editingCategory = nil
                         resetForm()
+                    } label: {
+                        Text(isEditing ? LocalizedStringKey("Save") : LocalizedStringKey("Add"))
                     }
-                    .disabled(newName.isEmpty)
+                    .disabled(!hasValidCategoryName(isEditing: isEditing))
                 }
             }
         }
@@ -185,8 +227,18 @@ struct CategoriesView: View {
         #endif
         .onAppear {
             if let category = editing {
-                newName = category.name
-                newColorHex = category.colorHex
+                let legacyName = legacyLocalizedNames(from: category.name)
+                let englishName = category.nameEnglish.categoryFormTrimmed
+                let chineseName = category.nameChineseSimplified.categoryFormTrimmed
+
+                if category.hasDefaultLocalizedName && !category.hasLocalizedNameOverrides {
+                    newEnglishName = ""
+                    newChineseName = ""
+                } else {
+                    newEnglishName = englishName.isEmpty && chineseName.isEmpty ? legacyName.english : englishName
+                    newChineseName = englishName.isEmpty && chineseName.isEmpty ? legacyName.chinese : chineseName
+                }
+                newColor = Color(hex: category.colorHex)
                 newIcon = category.icon
             } else {
                 resetForm()
@@ -196,10 +248,32 @@ struct CategoriesView: View {
 
     // MARK: - Helpers
 
+    private func hasValidCategoryName(isEditing: Bool) -> Bool {
+        isEditing || !Category.canonicalName(english: newEnglishName, chineseSimplified: newChineseName).isEmpty
+    }
+
     private func resetForm() {
-        newName = ""
-        newColorHex = "#4ECDC4"
+        newEnglishName = ""
+        newChineseName = ""
+        newColor = Color(hex: "#4ECDC4")
         newIcon = "tag"
+        showIconPicker = false
+    }
+
+    private func legacyLocalizedNames(from name: String) -> (english: String, chinese: String) {
+        let trimmedName = name.categoryFormTrimmed
+        let containsCJK = trimmedName.range(
+            of: "\\p{Han}",
+            options: .regularExpression
+        ) != nil
+
+        return containsCJK ? ("", trimmedName) : (trimmedName, "")
+    }
+}
+
+private extension String {
+    var categoryFormTrimmed: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 

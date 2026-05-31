@@ -2,6 +2,7 @@ import SwiftUI
 
 public struct ContentView: View {
 
+    @AppStorage(AppConstants.languageStorageKey) private var preferredLanguage = "system"
     @State private var selectedDestination: SidebarDestination = .dashboard
     @State private var lastContentDestination: SidebarDestination = .dashboard
     @State private var showAddSubscriptionSheet = false
@@ -17,12 +18,12 @@ public struct ContentView: View {
 
     private var tabs: some View {
         TabView(selection: tabSelection) {
-            Tab("Dashboard", systemImage: "square.grid.2x2", value: SidebarDestination.dashboard) {
+            Tab("Home", systemImage: "square.grid.2x2", value: SidebarDestination.dashboard) {
                 NavigationStack {
                     DashboardView()
                 }
             }
-            Tab("Subscriptions", systemImage: "list.bullet", value: SidebarDestination.subscriptions) {
+            Tab("Subs", systemImage: "list.bullet", value: SidebarDestination.subscriptions) {
                 NavigationStack {
                     SubscriptionListView(showAddSheet: $showAddSubscriptionSheet)
                 }
@@ -41,7 +42,7 @@ public struct ContentView: View {
             Tab(value: SidebarDestination.addSubscription, role: .search) {
                 Color.clear
             } label: {
-                Label("Add Subscription", systemImage: "plus")
+                Label("Add", systemImage: "plus")
                     .labelStyle(.iconOnly)
                     .accessibilityLabel("Add Subscription")
             }
@@ -49,6 +50,7 @@ public struct ContentView: View {
             #endif
         }
         .tabViewStyle(.sidebarAdaptable)
+        .id(preferredLanguage)
         #if os(iOS)
         .tabBarMinimizeBehavior(.onScrollDown)
         #endif

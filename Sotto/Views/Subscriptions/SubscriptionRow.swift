@@ -4,6 +4,7 @@ struct SubscriptionRow: View {
     let subscription: Subscription
     var isSelected: Bool = false
     var isCompact: Bool = false
+    @Environment(\.locale) private var locale
 
     // MARK: - Body
 
@@ -23,7 +24,7 @@ struct SubscriptionRow: View {
                         Circle()
                             .fill(Color(hex: category.colorHex))
                             .frame(width: 7, height: 7)
-                        Text(category.name)
+                        Text(category.localizedName(for: locale))
                     } else {
                         Text("Uncategorized")
                     }
