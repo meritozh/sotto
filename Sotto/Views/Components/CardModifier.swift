@@ -43,7 +43,7 @@ extension View {
     @ViewBuilder
     func floatingTabBarContentClearance() -> some View {
         #if os(iOS)
-        self.contentMargins(.bottom, 24, for: .scrollContent)
+        self.contentMargins(.bottom, 96, for: .scrollContent)
         #else
         self
         #endif

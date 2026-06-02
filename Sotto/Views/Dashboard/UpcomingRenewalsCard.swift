@@ -43,6 +43,7 @@ struct RenewalTimelineCard: View {
 
     let activeSubscriptions: [Subscription]
     private let maxItems = 8
+    @Environment(\.locale) private var locale
 
     // MARK: - Computed Properties
 
@@ -92,7 +93,7 @@ struct RenewalTimelineCard: View {
 
     private func timelineGroup(_ group: RenewalTimelineGroup) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(title(for: group.date))
+            title(for: group.date)
                 .cardSectionHeader()
 
             VStack(spacing: 0) {
@@ -161,15 +162,15 @@ struct RenewalTimelineCard: View {
             .foregroundStyle(isUrgent ? .red : .secondary)
     }
 
-    private func title(for date: Date) -> String {
+    private func title(for date: Date) -> Text {
         let calendar = Calendar.current
         if calendar.isDateInToday(date) {
-            return String(localized: "Today")
+            return Text("Today")
         }
         if calendar.isDateInTomorrow(date) {
-            return String(localized: "Tomorrow")
+            return Text("Tomorrow")
         }
-        return date.formatted(.dateTime.month(.abbreviated).day())
+        return Text(verbatim: date.formatted(.dateTime.month(.abbreviated).day().locale(locale)))
     }
 }
 

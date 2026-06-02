@@ -47,6 +47,11 @@ targets:
       properties:
         LSApplicationCategoryType: public.app-category.finance
         UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
         CFBundleDevelopmentRegion: en
         CFBundleLocalizations:
           - en

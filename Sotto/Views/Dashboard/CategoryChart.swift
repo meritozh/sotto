@@ -7,6 +7,7 @@ struct CategoryChart: View {
 
     let activeSubscriptions: [Subscription]
     let exchangeRate: ExchangeRate?
+    var isCompact = false
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "USD"
     @Environment(\.locale) private var locale
 
@@ -68,28 +69,47 @@ struct CategoryChart: View {
                     .foregroundStyle(DesignTokens.label3)
                     .frame(maxWidth: .infinity, minHeight: 150)
             } else {
-                HStack(alignment: .center, spacing: 18) {
-                    Donut(slices: slices, total: total, currency: baseCurrency)
-                        .frame(width: 132, height: 132)
-
-                    VStack(spacing: 0) {
-                        ForEach(Array(slices.enumerated()), id: \.element.id) { index, slice in
-                            categoryRow(slice)
-                            if index < slices.count - 1 {
-                                Rectangle()
-                                    .fill(DesignTokens.contentDivider)
-                                    .frame(height: 0.5)
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                chartContent
             }
         }
-        .cardStyle()
+        .cardStyle(paddingH: isCompact ? 14 : 18, paddingV: 16)
     }
 
     // MARK: - Subviews
+
+    @ViewBuilder
+    private var chartContent: some View {
+        if isCompact {
+            VStack(alignment: .leading, spacing: 14) {
+                Donut(slices: slices, total: total, currency: baseCurrency)
+                    .frame(width: 124, height: 124)
+                    .frame(maxWidth: .infinity, alignment: .center)
+
+                categoryRows
+            }
+        } else {
+            HStack(alignment: .center, spacing: 18) {
+                Donut(slices: slices, total: total, currency: baseCurrency)
+                    .frame(width: 132, height: 132)
+
+                categoryRows
+            }
+        }
+    }
+
+    private var categoryRows: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(slices.enumerated()), id: \.element.id) { index, slice in
+                categoryRow(slice)
+                if index < slices.count - 1 {
+                    Rectangle()
+                        .fill(DesignTokens.contentDivider)
+                        .frame(height: 0.5)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
 
     private func categoryRow(_ slice: Slice) -> some View {
         let progress = total > 0 ? NSDecimalNumber(decimal: slice.amount / maxAmount).doubleValue : 0
@@ -101,26 +121,34 @@ struct CategoryChart: View {
             Text(slice.name)
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(DesignTokens.label)
-                .lineLimit(2)
-                .frame(width: 90, alignment: .leading)
+                .lineLimit(isCompact ? 1 : 2)
+                .minimumScaleFactor(isCompact ? 0.8 : 1)
+                .frame(width: isCompact ? nil : 90, alignment: .leading)
+                .frame(maxWidth: isCompact ? .infinity : nil, alignment: .leading)
 
-            GeometryReader { geo in
-                ZStack(alignment: .leading) {
-                    Capsule()
-                        .fill(DesignTokens.contentDivider)
-                    Capsule()
-                        .fill(slice.color)
-                        .frame(width: geo.size.width * progress)
+            if isCompact {
+                Spacer(minLength: 8)
+            } else {
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule()
+                            .fill(DesignTokens.contentDivider)
+                        Capsule()
+                            .fill(slice.color)
+                            .frame(width: geo.size.width * progress)
+                    }
                 }
+                .frame(height: 6)
+                .frame(maxWidth: .infinity)
             }
-            .frame(height: 6)
-            .frame(maxWidth: .infinity)
 
             Text(slice.amount, format: .currency(code: baseCurrency))
                 .font(.system(size: 12))
                 .monospacedDigit()
                 .foregroundStyle(DesignTokens.label2)
-                .frame(width: 70, alignment: .trailing)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+                .frame(width: isCompact ? nil : 70, alignment: .trailing)
         }
         .padding(.vertical, 8)
     }
@@ -168,6 +196,9 @@ private struct Donut: View {
                     .font(.system(size: 18, weight: .semibold))
                     .monospacedDigit()
                     .foregroundStyle(DesignTokens.label)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.65)
+                    .frame(maxWidth: 96)
             }
         }
     }

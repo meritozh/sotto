@@ -173,6 +173,23 @@
         }
       }
     },
+    "%lld upcoming" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld upcoming"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 项即将续费"
+          }
+        }
+      }
+    },
     "%lldd" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2570,6 +2587,23 @@
         }
       }
     },
+    "Tomorrow" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomorrow"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "明天"
+          }
+        }
+      }
+    },
     "Total Spent" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2832,6 +2866,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "in %lld days"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 天后"
+          }
+        }
+      }
+    },
+    "in %lldd" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in %lldd"
           }
         },
         "zh-Hans" : {

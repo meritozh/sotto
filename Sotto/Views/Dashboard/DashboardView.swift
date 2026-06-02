@@ -56,8 +56,16 @@ struct DashboardView: View {
             .padding(.top, isCompact ? 0 : 8)
 
             MasonryLayout(columns: isCompact ? 1 : 2, spacing: 16) {
-                SpendingCard(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
-                CategoryChart(activeSubscriptions: activeSubscriptions, exchangeRate: currentExchangeRate)
+                SpendingCard(
+                    activeSubscriptions: activeSubscriptions,
+                    exchangeRate: currentExchangeRate,
+                    isCompact: isCompact
+                )
+                CategoryChart(
+                    activeSubscriptions: activeSubscriptions,
+                    exchangeRate: currentExchangeRate,
+                    isCompact: isCompact
+                )
                 RenewalTimelineCard(activeSubscriptions: activeSubscriptions)
             }
             .padding()

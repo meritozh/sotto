@@ -7,6 +7,7 @@ struct SpendingCard: View {
 
     let activeSubscriptions: [Subscription]
     let exchangeRate: ExchangeRate?
+    var isCompact = false
     @AppStorage(AppConstants.currencyStorageKey) private var baseCurrency = "CNY"
 
     // MARK: - Computed Properties
@@ -46,10 +47,12 @@ struct SpendingCard: View {
             }
 
             Text(monthlyTotal, format: .currency(code: baseCurrency))
-                .font(.system(size: 38, weight: .semibold))
+                .font(.system(size: isCompact ? 34 : 38, weight: .semibold))
                 .monospacedDigit()
                 .kerning(-0.6)
                 .foregroundStyle(DesignTokens.label)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
 
             HStack(spacing: 4) {
                 Text("Yearly estimate")
@@ -62,30 +65,64 @@ struct SpendingCard: View {
                     .foregroundStyle(DesignTokens.label2)
             }
             .font(.system(size: 12))
+            .lineLimit(1)
+            .minimumScaleFactor(0.82)
 
-            HStack(spacing: 10) {
-                kpi(label: "Avg per sub",
-                    value: avgPerSub.formatted(.currency(code: baseCurrency)),
-                    suffix: "/mo")
-                kpi(label: "Due in 30d",
-                    value: "\(dueIn30)",
-                    suffix: nil)
-                kpi(label: "Active",
-                    value: "\(activeSubscriptions.count)",
-                    suffix: nil)
-            }
+            kpiSummary
             .padding(.top, 2)
         }
-        .cardStyle()
+        .cardStyle(paddingH: isCompact ? 14 : 18, paddingV: 16)
     }
 
     // MARK: - Subviews
+
+    @ViewBuilder
+    private var kpiSummary: some View {
+        if isCompact {
+            Grid(horizontalSpacing: 8, verticalSpacing: 8) {
+                GridRow {
+                    avgPerSubKPI
+                    dueIn30KPI
+                }
+                GridRow {
+                    activeKPI
+                        .gridCellColumns(2)
+                }
+            }
+        } else {
+            HStack(spacing: 10) {
+                avgPerSubKPI
+                dueIn30KPI
+                activeKPI
+            }
+        }
+    }
+
+    private var avgPerSubKPI: some View {
+        kpi(label: "Avg per sub",
+            value: avgPerSub.formatted(.currency(code: baseCurrency)),
+            suffix: "/mo")
+    }
+
+    private var dueIn30KPI: some View {
+        kpi(label: "Due in 30d",
+            value: "\(dueIn30)",
+            suffix: nil)
+    }
+
+    private var activeKPI: some View {
+        kpi(label: "Active",
+            value: "\(activeSubscriptions.count)",
+            suffix: nil)
+    }
 
     private func kpi(label: LocalizedStringResource, value: String, suffix: LocalizedStringResource?) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label)
                 .font(.system(size: 11, weight: .medium))
                 .foregroundStyle(DesignTokens.label3)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
             HStack(alignment: .firstTextBaseline, spacing: 2) {
                 Text(value)
                     .font(.system(size: 18, weight: .semibold))
@@ -98,6 +135,7 @@ struct SpendingCard: View {
                     Text(suffix)
                         .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(DesignTokens.label2)
+                        .lineLimit(1)
                 }
             }
         }
