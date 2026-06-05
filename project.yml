@@ -53,6 +53,7 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
         CFBundleDevelopmentRegion: en
+        CFBundleDisplayName: Sotto
         CFBundleLocalizations:
           - en
           - zh-Hans

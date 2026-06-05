@@ -734,6 +734,23 @@
         }
       }
     },
+    "Category Actions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Category Actions"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分类操作"
+          }
+        }
+      }
+    },
     "Chinese Yuan" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2532,6 +2549,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "新台币"
+          }
+        }
+      }
+    },
+    "Subscriptions in this category will become uncategorized. This action cannot be undone." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscriptions in this category will become uncategorized. This action cannot be undone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此分类中的订阅会变为未分类。此操作无法撤销。"
           }
         }
       }

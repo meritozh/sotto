@@ -16,6 +16,7 @@ struct CategoriesView: View {
     @State private var newColor = Color(hex: "#4ECDC4")
     @State private var newIcon = "tag"
     @State private var showIconPicker = false
+    @State private var categoryPendingDeletion: Category?
 
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -58,6 +59,18 @@ struct CategoriesView: View {
         .sheet(item: $editingCategory) { category in
             categoryForm(editing: category)
         }
+        .alert(item: $categoryPendingDeletion) { category in
+            Alert(
+                title: Text("Delete \(category.localizedName(for: locale))?"),
+                message: Text("Subscriptions in this category will become uncategorized. This action cannot be undone."),
+                primaryButton: .destructive(Text("Delete")) {
+                    deleteCategory(category)
+                },
+                secondaryButton: .cancel(Text("Cancel")) {
+                    categoryPendingDeletion = nil
+                }
+            )
+        }
     }
 
     private var categoryList: some View {
@@ -76,7 +89,7 @@ struct CategoriesView: View {
                                 Label("Edit", systemImage: "pencil")
                             }
                             Button(role: .destructive) {
-                                modelContext.delete(category)
+                                categoryPendingDeletion = category
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
@@ -111,7 +124,9 @@ struct CategoriesView: View {
                 Text(category.localizedName(for: locale))
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(DesignTokens.label)
+                    .lineLimit(1)
                 Spacer()
+                categoryActionsMenu(for: category)
             }
 
             Text("\(count) subscriptions")
@@ -132,6 +147,30 @@ struct CategoriesView: View {
         }
         .cardStyle(paddingH: 14, paddingV: 14)
         .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
+    }
+
+    private func categoryActionsMenu(for category: Category) -> some View {
+        Menu {
+            Button {
+                editingCategory = category
+            } label: {
+                Label("Edit", systemImage: "pencil")
+            }
+
+            Button(role: .destructive) {
+                categoryPendingDeletion = category
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+        } label: {
+            Image(systemName: "ellipsis.circle")
+                .font(.system(size: 18, weight: .medium))
+                .foregroundStyle(DesignTokens.label3)
+                .frame(width: 30, height: 30)
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text("Category Actions"))
     }
 
     private func categoryForm(editing: Category?) -> some View {
@@ -258,6 +297,17 @@ struct CategoriesView: View {
         newColor = Color(hex: "#4ECDC4")
         newIcon = "tag"
         showIconPicker = false
+    }
+
+    private func deleteCategory(_ category: Category) {
+        for subscription in category.subscriptions ?? [] {
+            subscription.category = nil
+        }
+        if editingCategory?.id == category.id {
+            editingCategory = nil
+        }
+        modelContext.delete(category)
+        categoryPendingDeletion = nil
     }
 
     private func legacyLocalizedNames(from name: String) -> (english: String, chinese: String) {
