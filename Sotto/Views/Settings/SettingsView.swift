@@ -126,7 +126,7 @@ struct SettingsView: View {
 
             Section("About") {
                 LabeledContent("Version") {
-                    Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—")
+                    Text(AppVersion.current.displayString)
                 }
                 LabeledContent("Platform") {
                     #if os(iOS)

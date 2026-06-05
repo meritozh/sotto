@@ -20,9 +20,7 @@ let package = Package(
             name: "SottoKit",
             path: "Sotto",
             exclude: [
-                ".DS_Store",
                 "App",
-                "Views/.DS_Store",
             ]
         ),
         .testTarget(
