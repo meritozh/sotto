@@ -13,8 +13,8 @@ settings:
     SWIFT_VERSION: "6.0"
     CODE_SIGN_STYLE: Automatic
     DEVELOPMENT_TEAM: N59353RP3W
-    MARKETING_VERSION: "1.1.1"
-    CURRENT_PROJECT_VERSION: "3"
+    MARKETING_VERSION: "1.1.2"
+    CURRENT_PROJECT_VERSION: "4"
 
 packages:
   SottoKit:
@@ -47,6 +47,8 @@ targets:
       path: Generated/Sotto-Info.plist
       properties:
         LSApplicationCategoryType: public.app-category.finance
+        UIBackgroundModes:
+          - remote-notification
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
