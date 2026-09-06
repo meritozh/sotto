@@ -1,0 +1,11 @@
+kind = "native"
+team_id = "N59353RP3W"
+bundle_id = "com.meritozh.sotto"
+product_name = "Sotto"
+version = "1.1.2"
+build = 4
+channels = ["developer-id"]
+
+[native]
+project = "Sotto.xcodeproj"
+scheme = "Sotto"
