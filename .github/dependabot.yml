@@ -1,0 +1,16 @@
+# Dependabot version updates.
+# Ecosystems match manifests in this repository:
+# - swift: Package.swift at the repository root
+# - github-actions: workflow files under .github/workflows
+
+version: 2
+updates:
+  - package-ecosystem: "swift"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
